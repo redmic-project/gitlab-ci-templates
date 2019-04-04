@@ -1,0 +1,53 @@
+variables:
+  DEPLOY_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
+  STACK: stack
+  SERVICES_TO_CHECK: stack_${CI_PROJECT_NAME}
+  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  IMAGE_TAG: ${CI_COMMIT_SHA}
+
+.deploy:
+  stage: deploy
+  image: ${DEPLOY_IMAGE}
+  script:
+    - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
+  when: manual
+
+.deploy-develop:
+  extends: .deploy
+  variables:
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+    COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
+  environment:
+    name: dev
+
+.deploy-production:
+  extends: .deploy
+  variables:
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
+    COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
+  environment:
+    name: pro
+
+deploy-supporting-branch-develop:
+  extends: .deploy-develop
+  only:
+    - branches
+  except:
+    - master
+
+deploy-stable-branch-develop:
+  extends: .deploy-develop
+  only:
+    - master
+
+deploy-supporting-branch-production:
+  extends: .deploy-production
+  only:
+    - branches
+  except:
+    - master
+
+deploy-stable-branch-production:
+  extends: .deploy-production
+  only:
+    - master
