@@ -1,6 +1,10 @@
 variables:
   DEPLOYMENT_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
   STACK: stack
+  STATUS_CHECK_RETRIES: 10
+  STATUS_CHECK_INTERVAL: 20
+  STATUS_CHECK_DELAY: 120
+  STATUS_CHECK_MIN_HITS: 3
   IMAGE_NAME: ${CI_REGISTRY_IMAGE}
   IMAGE_TAG: ${CI_COMMIT_SHA}
 
@@ -13,11 +17,12 @@ variables:
     - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
   when: manual
 
-.deploy-develop:
+.deploy-development:
   extends: .deploy
   variables:
     SSH_REMOTE: ${DEV_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
+    PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
   environment:
     name: dev
 
@@ -26,18 +31,19 @@ variables:
   variables:
     SSH_REMOTE: ${PRO_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
+    PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
   environment:
     name: pro
 
-deploy-supporting-branch-develop:
-  extends: .deploy-develop
+deploy-supporting-branch-development:
+  extends: .deploy-development
   only:
     - branches
   except:
     - master
 
-deploy-stable-branch-develop:
-  extends: .deploy-develop
+deploy-stable-branch-development:
+  extends: .deploy-development
   only:
     - master
 
