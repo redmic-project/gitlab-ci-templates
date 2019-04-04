@@ -1,0 +1,23 @@
+variables:
+  MAINTENANCE_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
+  STACK: stack
+  SERVICE_TO_RUN: ${CI_PROJECT_NAME}
+
+.scheduled-run:
+  stage: maintenance
+  image: ${MAINTENANCE_IMAGE}
+  variables:
+    SERVICE: ${STACK}_${SERVICE_TO_RUN}
+  script: relaunch.sh
+  only:
+    - schedules
+
+scheduled-run-development:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+
+scheduled-run-production:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
