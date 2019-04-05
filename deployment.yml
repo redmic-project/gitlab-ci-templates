@@ -35,26 +35,32 @@ variables:
   environment:
     name: pro
 
-deploy-supporting-branch-development:
+deploy-support-branch-development:
   extends: .deploy-development
   only:
     - branches
   except:
     - master
+    - schedules
 
 deploy-stable-branch-development:
   extends: .deploy-development
   only:
     - master
+  except:
+    - schedules
 
-deploy-supporting-branch-production:
+deploy-support-branch-production:
   extends: .deploy-production
   only:
     - branches
   except:
     - master
+    - schedules
 
 deploy-stable-branch-production:
   extends: .deploy-production
   only:
     - master
+  except:
+    - schedules
