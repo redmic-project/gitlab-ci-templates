@@ -1,0 +1,40 @@
+include:
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/maven-building.yml'
+
+variables:
+  TEST_OUTPUT_PATH: target
+
+maven-build-lib:
+  extends: .maven-build
+  stage: build-lib
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-lib
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-lib
+    MAVEN_GOALS: deploy
+    BUILD_OUTPUT_PATH: target
+
+.maven-build-microservice:
+  extends: .maven-build
+  stage: build-service
+  variables:
+    MAVEN_GOALS: verify spring-boot:repackage
+    BUILD_OUTPUT_PATH: dist
+    DOCS_OUTPUT_PATH: target
+  artifacts:
+    paths:
+      - ${PROJECT_ROOT_PATH}/${BUILD_OUTPUT_PATH}/*.jar
+      - ${PROJECT_ROOT_PATH}/${DOCS_OUTPUT_PATH}/generated-docs
+
+maven-build-command:
+  extends: .maven-build-microservice
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-commands
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-commands
+
+maven-build-view:
+  extends: .maven-build-microservice
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-view
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-view

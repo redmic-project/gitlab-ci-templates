@@ -2,15 +2,9 @@ variables:
   BUILDING_IMAGE: ${MAVEN_IMAGE_NAME}:${MAVEN_IMAGE_TAG}
   MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
   SPRING_PROFILES_ACTIVE: test
-  MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}
-  MAVEN_GOALS: verify spring-boot:repackage
   TEST_COVERAGE_XPATH: //table[@id='coveragetable']/tfoot//td[@class='ctr2'][1]/text()
-  PROJECT_ROOT_PATH: '.'
-  TEST_OUTPUT_PATH: target
-  BUILD_OUTPUT_PATH: dist
 
-maven-build:
-  stage: build
+.maven-build:
   image: ${BUILDING_IMAGE}
   cache:
     paths:
