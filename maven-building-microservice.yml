@@ -1,0 +1,15 @@
+include:
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/maven-building.yml'
+
+variables:
+  MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}
+  MAVEN_GOALS: verify spring-boot:repackage
+  PROJECT_ROOT_PATH: '.'
+  TEST_OUTPUT_PATH: target
+  BUILD_OUTPUT_PATH: dist
+
+maven-build:
+  extends: .maven-build
+  stage: build
