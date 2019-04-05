@@ -5,13 +5,12 @@ variables:
   DOCKER_REGISTRY_USER: gitlab-ci-token
   DOCKER_REGISTRY_PASS: ${CI_JOB_TOKEN}
   DOCKER_BUILD_ARGS: ''
-  DOCKER_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
 
 .docker:
   image: ${PACKAGING_IMAGE}
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_DEFAULT_TAGGING: ${DOCKER_IMAGE_NAME}:${CI_COMMIT_SHA}
+    DOCKER_DEFAULT_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
   services:
     - ${DIND_IMAGE}
   before_script:
@@ -21,7 +20,7 @@ variables:
   stage: package
   extends: .docker
   after_script:
-    - docker push ${DOCKER_IMAGE_NAME}
+    - docker push ${CI_REGISTRY_IMAGE}
 
 .docker-operations-build:
   extends: .docker-operations
@@ -31,7 +30,7 @@ variables:
 docker-build-support-branch:
   extends: .docker-operations-build
   variables:
-    DOCKER_SPECIFIC_TAGGING: ${DOCKER_IMAGE_NAME}:${CI_COMMIT_REF_NAME}-latest
+    DOCKER_SPECIFIC_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-latest
   only:
     - branches
   except:
@@ -41,7 +40,7 @@ docker-build-support-branch:
 docker-build-stable-branch:
   extends: .docker-operations-build
   variables:
-    DOCKER_SPECIFIC_TAGGING: ${DOCKER_IMAGE_NAME}:latest
+    DOCKER_SPECIFIC_TAGGING: ${CI_REGISTRY_IMAGE}:latest
   only:
     - master
   except:
@@ -53,7 +52,7 @@ docker-tag:
     - tags
   script:
     - docker pull ${DOCKER_DEFAULT_TAGGING}
-    - docker tag ${DOCKER_DEFAULT_TAGGING} ${DOCKER_IMAGE_NAME}:${CI_COMMIT_TAG}
+    - docker tag ${DOCKER_DEFAULT_TAGGING} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
 
 docker-scan:
   stage: test-package
