@@ -4,6 +4,7 @@ variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
   DOCKER_REGISTRY_USER: gitlab-ci-token
   DOCKER_REGISTRY_PASS: ${CI_JOB_TOKEN}
+  DOCKER_CACHE_ARGS: '--cache-from ${CI_REGISTRY_IMAGE}:latest'
   DOCKER_BUILD_ARGS: ''
 
 .docker:
@@ -25,7 +26,11 @@ variables:
 .docker-operations-build:
   extends: .docker-operations
   script:
-    - docker build ${DOCKER_BUILD_ARGS} -t ${DOCKER_DEFAULT_TAGGING} -t ${DOCKER_SPECIFIC_TAGGING} .
+    - docker pull ${CI_REGISTRY_IMAGE}:latest || true
+    - >
+      docker build ${DOCKER_CACHE_ARGS} ${DOCKER_BUILD_ARGS}
+      -t ${DOCKER_DEFAULT_TAGGING}
+      -t ${DOCKER_SPECIFIC_TAGGING} .
 
 docker-build-support-branch:
   extends: .docker-operations-build
