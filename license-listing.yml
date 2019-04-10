@@ -1,0 +1,5 @@
+include:
+  template: License-Management.gitlab-ci.yml
+
+license_management:
+  stage: license-list

@@ -4,8 +4,8 @@ variables:
   DOCKER_REGISTRY: ${CI_REGISTRY}
   DOCKER_REGISTRY_USER: gitlab-ci-token
   DOCKER_REGISTRY_PASS: ${CI_JOB_TOKEN}
-  DOCKER_CACHE_ARGS: ''
-  DOCKER_BUILD_ARGS: '--cache-from ${CI_REGISTRY_IMAGE}:latest'
+  DOCKER_CACHE_ARGS: '--cache-from ${CI_REGISTRY_IMAGE}:latest'
+  DOCKER_BUILD_ARGS: ''
 
 .docker:
   image: ${PACKAGING_IMAGE}
