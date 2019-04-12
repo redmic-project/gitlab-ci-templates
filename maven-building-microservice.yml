@@ -1,5 +1,5 @@
 include:
-  - './maven-building.yml'
+  - local: '/maven-building.yml'
 
 variables:
   MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}
