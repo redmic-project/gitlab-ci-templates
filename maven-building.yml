@@ -12,8 +12,13 @@ variables:
   script:
     - mvn -pl :${MAVEN_PROJECT_NAME} -U -B clean ${MAVEN_GOALS}
     - coveragePath="${PROJECT_ROOT_PATH}/${TEST_OUTPUT_PATH}/site/jacoco/index.html"
-    - coverage=$(xmllint --html --xpath "${TEST_COVERAGE_XPATH}" "${coveragePath}")
-    - echo "Coverage - ${coverage}"
+    - >
+      if [ -f "${coveragePath}" ];
+      then
+        coverage=$(xmllint --html --xpath "${TEST_COVERAGE_XPATH}" "${coveragePath}");
+        echo "Coverage - ${coverage}";
+      fi
+
   after_script:
     - rm -r .m2/repository/es
   only:
