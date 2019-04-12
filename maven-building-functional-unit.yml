@@ -1,5 +1,5 @@
 include:
-  - './maven-building.yml'
+  - local: '/maven-building.yml'
 
 variables:
   TEST_OUTPUT_PATH: target
