@@ -53,14 +53,6 @@ deploy-stable-branch-development:
   except:
     - schedules
 
-deploy-support-branch-production:
-  extends: .deploy-production
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-
 deploy-stable-branch-production:
   extends: .deploy-production
   only:
