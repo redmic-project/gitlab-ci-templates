@@ -69,6 +69,8 @@ docker-tag-docker-hub:
     - dockerHubImage="${DOCKER_HUB_ROOT}/${dockerHubImagePath}"
     - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:${CI_COMMIT_TAG}
     - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:latest
+    - docker push ${dockerHubImage}
+  after_script: []
 
 docker-scan:
   stage: test-package
