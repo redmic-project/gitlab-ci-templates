@@ -1,10 +1,9 @@
 variables:
   PACKAGING_IMAGE: docker:stable
   DIND_IMAGE: docker:dind
-  DOCKER_REGISTRY: ${CI_REGISTRY}
-  DOCKER_REGISTRY_USER: gitlab-ci-token
-  DOCKER_REGISTRY_PASS: ${CI_JOB_TOKEN}
-  DOCKER_CACHE_ARGS: '--cache-from ${CI_REGISTRY_IMAGE}:latest'
+  GITLAB_REGISTRY_USER: gitlab-ci-token
+  GITLAB_REGISTRY_PASS: ${CI_JOB_TOKEN}
+  DOCKER_HUB_ROOT: redmic
   DOCKER_BUILD_ARGS: ''
 
 .docker:
@@ -15,7 +14,7 @@ variables:
   services:
     - ${DIND_IMAGE}
   before_script:
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY}
+    - docker login -u ${GITLAB_REGISTRY_USER} -p ${GITLAB_REGISTRY_PASS} ${CI_REGISTRY}
 
 .docker-operations:
   stage: package
@@ -28,7 +27,7 @@ variables:
   script:
     - docker pull ${CI_REGISTRY_IMAGE}:latest || true
     - >
-      docker build ${DOCKER_CACHE_ARGS} ${DOCKER_BUILD_ARGS}
+      docker build --cache-from ${CI_REGISTRY_IMAGE}:latest ${DOCKER_BUILD_ARGS}
       -t ${DOCKER_DEFAULT_TAGGING}
       -t ${DOCKER_SPECIFIC_TAGGING} .
 
@@ -51,13 +50,25 @@ docker-build-stable-branch:
   except:
     - schedules
 
-docker-tag:
+docker-tag-gitlab-registry:
   extends: .docker-operations
   only:
     - tags
   script:
     - docker pull ${DOCKER_DEFAULT_TAGGING}
     - docker tag ${DOCKER_DEFAULT_TAGGING} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
+
+docker-tag-docker-hub:
+  extends: .docker-operations
+  only:
+    - tags
+  script:
+    - docker pull ${DOCKER_DEFAULT_TAGGING}
+    - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASS}
+    - dockerHubImagePath="$(echo ${CI_PROJECT_PATH} | cut -d '/' -f 2-)"
+    - dockerHubImage="${DOCKER_HUB_ROOT}/${dockerHubImagePath}"
+    - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:${CI_COMMIT_TAG}
+    - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:latest
 
 docker-scan:
   stage: test-package
