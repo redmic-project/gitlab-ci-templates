@@ -1,61 +1,11 @@
-variables:
-  DEPLOYMENT_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
-  STACK: stack
-  REGISTRY_URL: ${CI_REGISTRY}
-  REGISTRY_USER: ${CI_DEPLOY_USER}
-  REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
-  STATUS_CHECK_RETRIES: 10
-  STATUS_CHECK_INTERVAL: 20
-  STATUS_CHECK_DELAY: 120
-  STATUS_CHECK_MIN_HITS: 3
-  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
-  IMAGE_TAG: ${CI_COMMIT_SHA}
-
-.deploy:
-  stage: deploy
-  image: ${DEPLOYMENT_IMAGE}
-  variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}
-  script:
-    - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
-  when: manual
-
-.deploy-development:
-  extends: .deploy
-  variables:
-    SSH_REMOTE: ${DEV_SSH_REMOTE}
-    COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
-    PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
-  environment:
-    name: dev
-
-.deploy-production:
-  extends: .deploy
-  variables:
-    SSH_REMOTE: ${PRO_SSH_REMOTE}
-    COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
-    PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
-  environment:
-    name: pro
+include:
+  - local: '/_deployment.yml'
 
 deploy-support-branch-development:
-  extends: .deploy-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
+  extends: .deploy-support-branch-development
 
 deploy-stable-branch-development:
-  extends: .deploy-development
-  only:
-    - master
-  except:
-    - schedules
+  extends: .deploy-stable-branch-development
 
 deploy-stable-branch-production:
-  extends: .deploy-production
-  only:
-    - master
-  except:
-    - schedules
+  extends: .deploy-stable-branch-production
