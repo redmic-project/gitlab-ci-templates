@@ -1,51 +1,47 @@
 include:
   - local: '/_deployment.yml'
 
-variables:
-  COMMANDS_NAME: ${CI_PROJECT_NAME}-commands
-  VIEW_NAME: ${CI_PROJECT_NAME}-view
-
 .deploy-commands:
   extends: .deploy
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${COMMANDS_NAME}
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-commands
 
 .deploy-view:
   extends: .deploy
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${VIEW_NAME}
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-view
 
 .deploy-commands-development:
   extends: .deploy-development
   variables:
-    COMPOSE_FILE: docker-compose.${COMMANDS_NAME}.tmpl.yml:docker-compose.${COMMANDS_NAME}.dev.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.dev.yml
     SPRING_PROFILES_ACTIVE: pre
   environment:
-    name: dev/${COMMANDS_NAME}
+    name: dev/${CI_PROJECT_NAME}-commands
 
 .deploy-view-development:
   extends: .deploy-development
   variables:
-    COMPOSE_FILE: docker-compose.${VIEW_NAME}.tmpl.yml:docker-compose.${VIEW_NAME}.dev.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.dev.yml
     SPRING_PROFILES_ACTIVE: pre
   environment:
-    name: dev/${VIEW_NAME}
+    name: dev/${CI_PROJECT_NAME}-view
 
 .deploy-commands-production:
   extends: .deploy-production
   variables:
-    COMPOSE_FILE: docker-compose.${COMMANDS_NAME}.tmpl.yml:docker-compose.${COMMANDS_NAME}.prod.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.prod.yml
     SPRING_PROFILES_ACTIVE: prod
   environment:
-    name: pro/${COMMANDS_NAME}
+    name: pro/${CI_PROJECT_NAME}-commands
 
 .deploy-view-production:
   extends: .deploy-production
   variables:
-    COMPOSE_FILE: docker-compose.${VIEW_NAME}.tmpl.yml:docker-compose.${VIEW_NAME}.prod.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.prod.yml
     SPRING_PROFILES_ACTIVE: prod
   environment:
-    name: pro/${VIEW_NAME}
+    name: pro/${CI_PROJECT_NAME}-view
 
 deploy-commands-support-branch-development:
   extends: .deploy-commands-development
