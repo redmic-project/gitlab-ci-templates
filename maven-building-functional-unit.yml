@@ -25,7 +25,7 @@ maven-build-lib:
       - ${PROJECT_ROOT_PATH}/${BUILD_OUTPUT_PATH}/*.jar
       - ${PROJECT_ROOT_PATH}/${DOCS_OUTPUT_PATH}/generated-docs
 
-maven-build-command:
+maven-build-commands:
   extends: .maven-build-microservice
   variables:
     MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-commands
