@@ -1,0 +1,92 @@
+include:
+  - local: '/_deployment.yml'
+
+variables:
+  COMMANDS_NAME: ${CI_PROJECT_NAME}-commands
+  VIEW_NAME: ${CI_PROJECT_NAME}-view
+
+.deploy-commands:
+  extends: .deploy
+  variables:
+    SERVICES_TO_CHECK: ${STACK}_${COMMANDS_NAME}
+
+.deploy-view:
+  extends: .deploy
+  variables:
+    SERVICES_TO_CHECK: ${STACK}_${VIEW_NAME}
+
+.deploy-commands-development:
+  extends: .deploy-development
+  variables:
+    COMPOSE_FILE: docker-compose.${COMMANDS_NAME}.tmpl.yml:docker-compose.${COMMANDS_NAME}.dev.yml
+    SPRING_PROFILES_ACTIVE: pre
+  environment:
+    name: dev/${COMMANDS_NAME}
+
+.deploy-view-development:
+  extends: .deploy-development
+  variables:
+    COMPOSE_FILE: docker-compose.${VIEW_NAME}.tmpl.yml:docker-compose.${VIEW_NAME}.dev.yml
+    SPRING_PROFILES_ACTIVE: pre
+  environment:
+    name: dev/${VIEW_NAME}
+
+.deploy-commands-production:
+  extends: .deploy-production
+  variables:
+    COMPOSE_FILE: docker-compose.${COMMANDS_NAME}.tmpl.yml:docker-compose.${COMMANDS_NAME}.prod.yml
+    SPRING_PROFILES_ACTIVE: prod
+  environment:
+    name: pro/${COMMANDS_NAME}
+
+.deploy-view-production:
+  extends: .deploy-production
+  variables:
+    COMPOSE_FILE: docker-compose.${VIEW_NAME}.tmpl.yml:docker-compose.${VIEW_NAME}.prod.yml
+    SPRING_PROFILES_ACTIVE: prod
+  environment:
+    name: pro/${VIEW_NAME}
+
+deploy-commands-support-branch-development:
+  extends: .deploy-commands-development
+  only:
+    - branches
+  except:
+    - master
+    - schedules
+
+deploy-commands-stable-branch-development:
+  extends: .deploy-commands-development
+  only:
+    - master
+  except:
+    - schedules
+
+deploy-commands-stable-branch-production:
+  extends: .deploy-commands-production
+  only:
+    - master
+  except:
+    - schedules
+
+deploy-view-support-branch-development:
+  extends: .deploy-view-development
+  only:
+    - branches
+  except:
+    - master
+    - schedules
+
+deploy-view-stable-branch-development:
+  extends: .deploy-view-development
+  only:
+    - master
+  except:
+    - schedules
+
+deploy-view-stable-branch-production:
+  extends: .deploy-view-production
+  only:
+    - master
+  except:
+    - schedules
