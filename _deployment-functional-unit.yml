@@ -7,9 +7,13 @@ include:
 
 .deploy-commands:
   extends: .deploy
+  variables:
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
 
 .deploy-view:
   extends: .deploy
+  variables:
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: view
 
 .deploy-microservice-development:
   variables: &deploy-microservice-development-variables
