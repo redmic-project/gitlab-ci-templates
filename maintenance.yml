@@ -1,7 +1,6 @@
 variables:
   MAINTENANCE_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
   STACK: stack
-  SERVICE_TO_RUN: ${CI_PROJECT_NAME}
   REGISTRY_URL: ${CI_REGISTRY}
   REGISTRY_USER: ${CI_DEPLOY_USER}
   REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
@@ -10,7 +9,7 @@ variables:
   stage: maintenance
   image: ${MAINTENANCE_IMAGE}
   variables:
-    SERVICE: ${STACK}_${SERVICE_TO_RUN}
+    SERVICE: ${STACK}_${CI_PROJECT_NAME}
   script: relaunch.sh
   only:
     - schedules
