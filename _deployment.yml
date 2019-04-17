@@ -1,5 +1,6 @@
 variables:
   DEPLOYMENT_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
+  DEPLOY_VERSION_TAG_REGEX: /^v\d+\.\d+\.\d+$/
   STACK: stack
   REGISTRY_URL: ${CI_REGISTRY}
   REGISTRY_USER: ${CI_DEPLOY_USER}
@@ -37,25 +38,3 @@ variables:
     PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
   environment:
     name: pro
-
-.deploy-support-branch-development:
-  extends: .deploy-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-
-.deploy-stable-branch-development:
-  extends: .deploy-development
-  only:
-    - master
-  except:
-    - schedules
-
-.deploy-stable-branch-production:
-  extends: .deploy-production
-  only:
-    - master
-  except:
-    - schedules

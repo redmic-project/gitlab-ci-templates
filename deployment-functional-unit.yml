@@ -1,87 +1,20 @@
 include:
   - local: '/_deployment.yml'
 
-.deploy-development-functional-unit: &deploy-development-functional-unit
-  extends: .deploy-development
-
-.deploy-production-functional-unit: &deploy-production-functional-unit
-  extends: .deploy-production
-
-.deploy-support-branch-development-functional-unit: &deploy-support-branch-development-functional-unit
-  extends: .deploy-support-branch-development
-
-.deploy-stable-branch-development-functional-unit: &deploy-stable-branch-development-functional-unit
-  extends: .deploy-stable-branch-development
-
-.deploy-stable-branch-production-functional-unit: &deploy-stable-branch-production-functional-unit
-  extends: .deploy-stable-branch-production
-
-.deploy-commands:
-  extends: .deploy
+.deploy:
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-commands
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-view:
-  extends: .deploy
+.deploy-development:
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-view
-
-.deploy-commands-development:
-  extends: .deploy-commands
-  <<: *deploy-development-functional-unit
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.dev.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.dev.yml
     SPRING_PROFILES_ACTIVE: pre
   environment:
-    name: dev/${CI_PROJECT_NAME}-commands
+    name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-view-development:
-  extends: .deploy-view
-  <<: *deploy-development-functional-unit
+.deploy-production:
   variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.dev.yml
-    SPRING_PROFILES_ACTIVE: pre
-  environment:
-    name: dev/${CI_PROJECT_NAME}-view
-
-.deploy-commands-production:
-  extends: .deploy-commands
-  <<: *deploy-production-functional-unit
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.prod.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.prod.yml
     SPRING_PROFILES_ACTIVE: prod
   environment:
-    name: pro/${CI_PROJECT_NAME}-commands
-
-.deploy-view-production:
-  extends: .deploy-view
-  <<: *deploy-production-functional-unit
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.prod.yml
-    SPRING_PROFILES_ACTIVE: prod
-  environment:
-    name: pro/${CI_PROJECT_NAME}-view
-
-deploy-commands-support-branch-development:
-  extends: .deploy-commands-development
-  <<: *deploy-support-branch-development-functional-unit
-
-deploy-commands-stable-branch-development:
-  extends: .deploy-commands-development
-  <<: *deploy-stable-branch-development-functional-unit
-
-deploy-commands-stable-branch-production:
-  extends: .deploy-commands-production
-  <<: *deploy-stable-branch-production-functional-unit
-
-deploy-view-support-branch-development:
-  extends: .deploy-view-development
-  <<: *deploy-support-branch-development-functional-unit
-
-deploy-view-stable-branch-development:
-  extends: .deploy-view-development
-  <<: *deploy-stable-branch-development-functional-unit
-
-deploy-view-stable-branch-production:
-  extends: .deploy-view-production
-  <<: *deploy-stable-branch-production-functional-unit
+    name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
