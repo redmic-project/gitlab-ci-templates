@@ -1,88 +1,20 @@
 include:
   - local: '/_deployment.yml'
 
-.deploy-commands:
-  extends: .deploy
+.deploy:
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-commands
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-view:
-  extends: .deploy
+.deploy-development:
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-view
-
-.deploy-commands-development:
-  extends: .deploy-development
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.dev.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.dev.yml
     SPRING_PROFILES_ACTIVE: pre
   environment:
-    name: dev/${CI_PROJECT_NAME}-commands
+    name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-view-development:
-  extends: .deploy-development
+.deploy-production:
   variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.dev.yml
-    SPRING_PROFILES_ACTIVE: pre
-  environment:
-    name: dev/${CI_PROJECT_NAME}-view
-
-.deploy-commands-production:
-  extends: .deploy-production
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.prod.yml
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.prod.yml
     SPRING_PROFILES_ACTIVE: prod
   environment:
-    name: pro/${CI_PROJECT_NAME}-commands
-
-.deploy-view-production:
-  extends: .deploy-production
-  variables:
-    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.prod.yml
-    SPRING_PROFILES_ACTIVE: prod
-  environment:
-    name: pro/${CI_PROJECT_NAME}-view
-
-deploy-commands-support-branch-development:
-  extends: .deploy-commands-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-
-deploy-commands-stable-branch-development:
-  extends: .deploy-commands-development
-  only:
-    - master
-  except:
-    - schedules
-
-deploy-commands-stable-branch-production:
-  extends: .deploy-commands-production
-  only:
-    - master
-  except:
-    - schedules
-
-deploy-view-support-branch-development:
-  extends: .deploy-view-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-
-deploy-view-stable-branch-development:
-  extends: .deploy-view-development
-  only:
-    - master
-  except:
-    - schedules
-
-deploy-view-stable-branch-production:
-  extends: .deploy-view-production
-  only:
-    - master
-  except:
-    - schedules
+    name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}

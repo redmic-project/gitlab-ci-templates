@@ -1,0 +1,43 @@
+include:
+  - local: '/deployment-functional-unit.yml'
+
+variables:
+  FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
+
+deploy-commands-support-branch-development:
+  extends: .deploy-development
+  only:
+    - branches
+  except:
+    - master
+    - schedules
+
+deploy-commands-stable-branch-development:
+  extends: .deploy-development
+  only:
+    - master
+  except:
+    - schedules
+
+deploy-commands-stable-branch-production:
+  extends: .deploy-production
+  only:
+    - master
+  except:
+    - schedules
+
+deploy-commands-version-development:
+  extends: .deploy-development
+  only:
+    - ${DEPLOY_VERSION_TAG_REGEX}
+  except:
+    - branches
+    - schedules
+
+deploy-commands-version-production:
+  extends: .deploy-production
+  only:
+    - ${DEPLOY_VERSION_TAG_REGEX}
+  except:
+    - branches
+    - schedules
