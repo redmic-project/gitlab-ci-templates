@@ -27,8 +27,8 @@ include:
     SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-view
 
 .deploy-commands-development:
-  <<: *deploy-development-functional-unit
   extends: .deploy-commands
+  <<: *deploy-development-functional-unit
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.dev.yml
     SPRING_PROFILES_ACTIVE: pre
@@ -36,8 +36,8 @@ include:
     name: dev/${CI_PROJECT_NAME}-commands
 
 .deploy-view-development:
-  <<: *deploy-development-functional-unit
   extends: .deploy-view
+  <<: *deploy-development-functional-unit
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.dev.yml
     SPRING_PROFILES_ACTIVE: pre
@@ -45,8 +45,8 @@ include:
     name: dev/${CI_PROJECT_NAME}-view
 
 .deploy-commands-production:
-  <<: *deploy-production-functional-unit
   extends: .deploy-commands
+  <<: *deploy-production-functional-unit
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.prod.yml
     SPRING_PROFILES_ACTIVE: prod
@@ -54,8 +54,8 @@ include:
     name: pro/${CI_PROJECT_NAME}-commands
 
 .deploy-view-production:
-  <<: *deploy-production-functional-unit
   extends: .deploy-view
+  <<: *deploy-production-functional-unit
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.prod.yml
     SPRING_PROFILES_ACTIVE: prod
@@ -63,25 +63,25 @@ include:
     name: pro/${CI_PROJECT_NAME}-view
 
 deploy-commands-support-branch-development:
-  <<: *deploy-support-branch-development-functional-unit
   extends: .deploy-commands-development
+  <<: *deploy-support-branch-development-functional-unit
 
 deploy-commands-stable-branch-development:
-  <<: *deploy-stable-branch-development-functional-unit
   extends: .deploy-commands-development
+  <<: *deploy-stable-branch-development-functional-unit
 
 deploy-commands-stable-branch-production:
-  <<: *deploy-stable-branch-production-functional-unit
   extends: .deploy-commands-production
+  <<: *deploy-stable-branch-production-functional-unit
 
 deploy-view-support-branch-development:
-  <<: *deploy-support-branch-development-functional-unit
   extends: .deploy-view-development
+  <<: *deploy-support-branch-development-functional-unit
 
 deploy-view-stable-branch-development:
-  <<: *deploy-stable-branch-development-functional-unit
   extends: .deploy-view-development
+  <<: *deploy-stable-branch-development-functional-unit
 
 deploy-view-stable-branch-production:
-  <<: *deploy-stable-branch-production-functional-unit
   extends: .deploy-view-production
+  <<: *deploy-stable-branch-production-functional-unit
