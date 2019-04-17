@@ -1,7 +1,4 @@
 variables:
-  DEPLOY_BASE_JOB: .deploy
-  DEPLOY_DEVELOPMENT_BASE_JOB: .deploy-development
-  DEPLOY_PRODUCTION_BASE_JOB: .deploy-production
   DEPLOYMENT_IMAGE: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
   STACK: stack
   REGISTRY_URL: ${CI_REGISTRY}
@@ -24,7 +21,7 @@ variables:
   when: manual
 
 .deploy-development:
-  extends: ${DEPLOY_BASE_JOB}
+  extends: .deploy
   variables:
     SSH_REMOTE: ${DEV_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
@@ -33,7 +30,7 @@ variables:
     name: dev
 
 .deploy-production:
-  extends: ${DEPLOY_BASE_JOB}
+  extends: .deploy
   variables:
     SSH_REMOTE: ${PRO_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
@@ -42,7 +39,7 @@ variables:
     name: pro
 
 .deploy-support-branch-development:
-  extends: ${DEPLOY_DEVELOPMENT_BASE_JOB}
+  extends: .deploy-development
   only:
     - branches
   except:
@@ -50,14 +47,14 @@ variables:
     - schedules
 
 .deploy-stable-branch-development:
-  extends: ${DEPLOY_DEVELOPMENT_BASE_JOB}
+  extends: .deploy-development
   only:
     - master
   except:
     - schedules
 
 .deploy-stable-branch-production:
-  extends: ${DEPLOY_PRODUCTION_BASE_JOB}
+  extends: .deploy-production
   only:
     - master
   except:
