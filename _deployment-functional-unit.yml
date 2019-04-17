@@ -1,0 +1,50 @@
+include:
+  - local: '/_deployment.yml'
+
+.deploy:
+  variables:
+    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+
+.deploy-commands:
+  extends: .deploy
+
+.deploy-view:
+  extends: .deploy
+
+.deploy-microservice-development:
+  variables: &deploy-microservice-development-variables
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.dev.yml
+    PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
+    SPRING_PROFILES_ACTIVE: pre
+  environment: &deploy-microservice-development-environment
+    name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+
+.deploy-microservice-production:
+  variables: &deploy-microservice-production-variables
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
+    COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.prod.yml
+    PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
+    SPRING_PROFILES_ACTIVE: prod
+  environment: &deploy-microservice-production-environment
+    name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+
+.deploy-view-development:
+  extends: .deploy-view
+  variables: *deploy-microservice-development-variables
+  environment: *deploy-microservice-development-environment
+
+.deploy-view-production:
+  extends: .deploy-view
+  variables: *deploy-microservice-production-variables
+  environment: *deploy-microservice-production-environment
+
+.deploy-commands-development:
+  extends: .deploy-commands
+  variables: *deploy-microservice-development-variables
+  environment: *deploy-microservice-development-environment
+
+.deploy-commands-production:
+  extends: .deploy-commands
+  variables: *deploy-microservice-production-variables
+  environment: *deploy-microservice-production-environment
