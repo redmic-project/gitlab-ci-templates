@@ -1,6 +1,21 @@
 include:
   - local: '/_deployment.yml'
 
+.deploy-development-functional-unit: &deploy-development-functional-unit
+  extends: .deploy-development
+
+.deploy-production-functional-unit: &deploy-production-functional-unit
+  extends: .deploy-production
+
+.deploy-support-branch-development-functional-unit: &deploy-support-branch-development-functional-unit
+  extends: .deploy-support-branch-development
+
+.deploy-stable-branch-development-functional-unit: &deploy-stable-branch-development-functional-unit
+  extends: .deploy-stable-branch-development
+
+.deploy-stable-branch-production-functional-unit: &deploy-stable-branch-production-functional-unit
+  extends: .deploy-stable-branch-production
+
 .deploy-commands:
   extends: .deploy
   variables:
@@ -12,7 +27,8 @@ include:
     SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-view
 
 .deploy-commands-development:
-  extends: .deploy-development
+  <<: *deploy-development-functional-unit
+  extends: .deploy-commands
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.dev.yml
     SPRING_PROFILES_ACTIVE: pre
@@ -20,7 +36,8 @@ include:
     name: dev/${CI_PROJECT_NAME}-commands
 
 .deploy-view-development:
-  extends: .deploy-development
+  <<: *deploy-development-functional-unit
+  extends: .deploy-view
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.dev.yml
     SPRING_PROFILES_ACTIVE: pre
@@ -28,7 +45,8 @@ include:
     name: dev/${CI_PROJECT_NAME}-view
 
 .deploy-commands-production:
-  extends: .deploy-production
+  <<: *deploy-production-functional-unit
+  extends: .deploy-commands
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-commands.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-commands.prod.yml
     SPRING_PROFILES_ACTIVE: prod
@@ -36,7 +54,8 @@ include:
     name: pro/${CI_PROJECT_NAME}-commands
 
 .deploy-view-production:
-  extends: .deploy-production
+  <<: *deploy-production-functional-unit
+  extends: .deploy-view
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-view.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-view.prod.yml
     SPRING_PROFILES_ACTIVE: prod
@@ -44,45 +63,25 @@ include:
     name: pro/${CI_PROJECT_NAME}-view
 
 deploy-commands-support-branch-development:
+  <<: *deploy-support-branch-development-functional-unit
   extends: .deploy-commands-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
 
 deploy-commands-stable-branch-development:
+  <<: *deploy-stable-branch-development-functional-unit
   extends: .deploy-commands-development
-  only:
-    - master
-  except:
-    - schedules
 
 deploy-commands-stable-branch-production:
+  <<: *deploy-stable-branch-production-functional-unit
   extends: .deploy-commands-production
-  only:
-    - master
-  except:
-    - schedules
 
 deploy-view-support-branch-development:
+  <<: *deploy-support-branch-development-functional-unit
   extends: .deploy-view-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
 
 deploy-view-stable-branch-development:
+  <<: *deploy-stable-branch-development-functional-unit
   extends: .deploy-view-development
-  only:
-    - master
-  except:
-    - schedules
 
 deploy-view-stable-branch-production:
+  <<: *deploy-stable-branch-production-functional-unit
   extends: .deploy-view-production
-  only:
-    - master
-  except:
-    - schedules
