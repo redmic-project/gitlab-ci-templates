@@ -20,7 +20,7 @@ variables:
       fi
 
   after_script:
-    - rm -r .m2/repository/es
+    - rm -rf .m2/repository/es
   only:
     - branches
   artifacts:
