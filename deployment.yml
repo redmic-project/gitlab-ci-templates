@@ -26,15 +26,9 @@ deploy-stable-branch-production:
 deploy-version-development:
   extends: .deploy-development
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags
 
 deploy-version-production:
   extends: .deploy-production
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags

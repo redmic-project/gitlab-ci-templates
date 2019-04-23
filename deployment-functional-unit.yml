@@ -26,18 +26,12 @@ deploy-commands-stable-branch-production:
 deploy-commands-version-development:
   extends: .deploy-commands-development
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags
 
 deploy-commands-version-production:
   extends: .deploy-commands-production
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags
 
 deploy-view-support-branch-development:
   extends: .deploy-view-development
@@ -64,15 +58,9 @@ deploy-view-stable-branch-production:
 deploy-view-version-development:
   extends: .deploy-view-development
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags
 
 deploy-view-version-production:
   extends: .deploy-view-production
   only:
-    - ${DEPLOY_VERSION_TAG_REGEX}
-  except:
-    - branches
-    - schedules
+    - tags
