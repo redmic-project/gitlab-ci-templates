@@ -17,7 +17,7 @@ variables:
   variables:
     SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}
   script:
-    - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG} COMPOSE_FILE=${COMPOSE_FILE}
+    - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG}
   dependencies: []
   when: manual
 
