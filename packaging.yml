@@ -6,13 +6,17 @@ variables:
   DOCKER_HUB_ROOT: redmic
   DOCKER_BUILD_ARGS: ''
 
-.docker:
+.docker-env:
   image: ${PACKAGING_IMAGE}
   variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_DEFAULT_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
   services:
     - ${DIND_IMAGE}
+
+.docker:
+  extends: .docker-env
+  variables:
+    DOCKER_DEFAULT_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
   before_script:
     - docker login -u ${GITLAB_REGISTRY_USER} -p ${GITLAB_REGISTRY_PASS} ${CI_REGISTRY}
 
@@ -30,6 +34,19 @@ variables:
       docker build --cache-from ${CI_REGISTRY_IMAGE}:latest ${DOCKER_BUILD_ARGS}
       -t ${DOCKER_DEFAULT_TAGGING}
       -t ${DOCKER_SPECIFIC_TAGGING} .
+
+lint-dockerfile:
+  stage: package
+  extends: .docker-env
+  variables:
+    LINT_DOCKERFILE_IMAGE: hadolint/hadolint:latest
+    DOCKERFILE_PATH: Dockerfile
+  script:
+    - docker run --rm -i ${LINT_DOCKERFILE_IMAGE} < ${DOCKERFILE_PATH}
+  dependencies: []
+  allow_failure: true
+  except:
+    - schedules
 
 docker-build-support-branch:
   extends: .docker-operations-build
