@@ -3,6 +3,8 @@ include:
 
 license_management:
   stage: license-list
+  except:
+    - schedules
   artifacts:
     name: '${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME}'
     expire_in: '1 months'
