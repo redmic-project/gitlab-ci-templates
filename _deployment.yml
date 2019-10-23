@@ -8,16 +8,15 @@ variables:
   STATUS_CHECK_INTERVAL: 20
   STATUS_CHECK_DELAY: 120
   STATUS_CHECK_MIN_HITS: 3
-  IMAGE_NAME: ${CI_REGISTRY_IMAGE}
-  IMAGE_TAG: ${CI_COMMIT_SHA}
+  DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  DD_IMAGE_TAG: ${CI_COMMIT_SHA}
 
 .deploy:
   stage: deploy
   image: ${DEPLOYMENT_IMAGE}
   variables:
     SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}
-  script:
-    - deploy.sh IMAGE_NAME=${IMAGE_NAME} IMAGE_TAG=${IMAGE_TAG}
+  script: deploy.sh
   dependencies: []
   when: manual
 
@@ -27,6 +26,7 @@ variables:
     SSH_REMOTE: ${DEV_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
     PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
+    DD_PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
   environment:
     name: dev
 
@@ -36,5 +36,6 @@ variables:
     SSH_REMOTE: ${PRO_SSH_REMOTE}
     COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
     PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
+    DD_PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
   environment:
     name: pro
