@@ -1,66 +1,59 @@
 include:
   - local: '/_deployment-functional-unit.yml'
 
-deploy-commands-support-branch-development:
-  extends: .deploy-commands-development
+.deploy-support-branch: &deploy-support-branch
   only:
     - branches
   except:
     - master
+    - schedules
+
+deploy-commands-support-branch-development:
+  extends: .deploy-commands-development
+  <<: *deploy-support-branch
+
+deploy-view-support-branch-development:
+  extends: .deploy-view-development
+  <<: *deploy-support-branch
+
+.deploy-stable-branch: &deploy-stable-branch
+  only:
+    - master
+  except:
     - schedules
 
 deploy-commands-stable-branch-development:
   extends: .deploy-commands-development
-  only:
-    - master
-  except:
-    - schedules
+  <<: *deploy-stable-branch
 
 deploy-commands-stable-branch-production:
   extends: .deploy-commands-production
-  only:
-    - master
-  except:
-    - schedules
-
-deploy-commands-version-development:
-  extends: .deploy-commands-development
-  only:
-    - tags
-
-deploy-commands-version-production:
-  extends: .deploy-commands-production
-  only:
-    - tags
-
-deploy-view-support-branch-development:
-  extends: .deploy-view-development
-  only:
-    - branches
-  except:
-    - master
-    - schedules
+  <<: *deploy-stable-branch
 
 deploy-view-stable-branch-development:
   extends: .deploy-view-development
-  only:
-    - master
-  except:
-    - schedules
+  <<: *deploy-stable-branch
 
 deploy-view-stable-branch-production:
   extends: .deploy-view-production
-  only:
-    - master
-  except:
-    - schedules
+  <<: *deploy-stable-branch
 
-deploy-view-version-development:
+.deploy-tag: &deploy-tag
+  only:
+    - tags
+
+deploy-commands-tag-development:
+  extends: .deploy-commands-development
+  <<: *deploy-tag
+
+deploy-commands-tag-production:
+  extends: .deploy-commands-production
+  <<: *deploy-tag
+
+deploy-view-tag-development:
   extends: .deploy-view-development
-  only:
-    - tags
+  <<: *deploy-tag
 
-deploy-view-version-production:
+deploy-view-tag-production:
   extends: .deploy-view-production
-  only:
-    - tags
+  <<: *deploy-tag

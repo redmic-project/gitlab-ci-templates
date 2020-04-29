@@ -1,34 +1,39 @@
 include:
   - local: '/_deployment.yml'
 
-deploy-support-branch-development:
-  extends: .deploy-development
+.deploy-support-branch: &deploy-support-branch
   only:
     - branches
   except:
     - master
     - schedules
 
-deploy-stable-branch-development:
+deploy-support-branch-development:
   extends: .deploy-development
+  <<: *deploy-support-branch
+
+.deploy-stable-branch: &deploy-stable-branch
   only:
     - master
   except:
     - schedules
+
+deploy-stable-branch-development:
+  extends: .deploy-development
+  <<: *deploy-stable-branch
 
 deploy-stable-branch-production:
   extends: .deploy-production
-  only:
-    - master
-  except:
-    - schedules
+  <<: *deploy-stable-branch
 
-deploy-version-development:
+.deploy-tag: &deploy-tag
+  only:
+    - tags
+
+deploy-tag-development:
   extends: .deploy-development
-  only:
-    - tags
+  <<: *deploy-tag
 
-deploy-version-production:
+deploy-tag-production:
   extends: .deploy-production
-  only:
-    - tags
+  <<: *deploy-tag

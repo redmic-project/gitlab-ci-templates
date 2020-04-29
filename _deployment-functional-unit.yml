@@ -3,7 +3,7 @@ include:
 
 .deploy:
   variables:
-    SERVICES_TO_CHECK: ${STACK}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+    SERVICES_TO_CHECK: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
 .deploy-commands:
   extends: .deploy
@@ -37,16 +37,6 @@ include:
   environment: &deploy-microservice-production-environment
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-view-development:
-  extends: .deploy-view
-  variables: *deploy-microservice-development-variables
-  environment: *deploy-microservice-development-environment
-
-.deploy-view-production:
-  extends: .deploy-view
-  variables: *deploy-microservice-production-variables
-  environment: *deploy-microservice-production-environment
-
 .deploy-commands-development:
   extends: .deploy-commands
   variables: *deploy-microservice-development-variables
@@ -54,5 +44,15 @@ include:
 
 .deploy-commands-production:
   extends: .deploy-commands
+  variables: *deploy-microservice-production-variables
+  environment: *deploy-microservice-production-environment
+
+.deploy-view-development:
+  extends: .deploy-view
+  variables: *deploy-microservice-development-variables
+  environment: *deploy-microservice-development-environment
+
+.deploy-view-production:
+  extends: .deploy-view
   variables: *deploy-microservice-production-variables
   environment: *deploy-microservice-production-environment
