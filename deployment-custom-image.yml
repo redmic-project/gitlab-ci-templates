@@ -1,0 +1,9 @@
+.deploy:
+  variables:
+    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+    DD_IMAGE_TAG: ${CI_COMMIT_SHA}
+
+.deploy-tag:
+  variables:
+    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+    DD_IMAGE_TAG: ${CI_COMMIT_TAG}
