@@ -9,11 +9,16 @@ include:
   extends: .deploy
   variables:
     FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
+    STATUS_CHECK_DELAY: 300
 
 .deploy-view:
   extends: .deploy
   variables:
     FUNCTIONAL_UNIT_MICROSERVICE_NAME: view
+
+.deploy-microservice:
+  environment: &deploy-microservice-environment
+    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
 .deploy-microservice-development:
   extends: .deploy-development
@@ -23,6 +28,7 @@ include:
     DD_SPRING_PROFILES_ACTIVE: pre
   environment: &deploy-microservice-development-environment
     name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+    <<: *deploy-microservice-environment
 
 .deploy-microservice-production:
   extends: .deploy-production
@@ -32,6 +38,7 @@ include:
     DD_SPRING_PROFILES_ACTIVE: prod
   environment: &deploy-microservice-production-environment
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+    <<: *deploy-microservice-environment
 
 .deploy-commands-development:
   extends: .deploy-commands
