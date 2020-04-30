@@ -1,7 +1,10 @@
 include:
   - local: '/_deployment.yml'
 
+.deploy-branch-base:
+
 .deploy-support-branch: &deploy-support-branch
+  extends: .deploy-branch-base
   only:
     - branches
   except:
@@ -13,6 +16,7 @@ deploy-support-branch-development:
   <<: *deploy-support-branch
 
 .deploy-stable-branch: &deploy-stable-branch
+  extends: .deploy-branch-base
   only:
     - master
   except:
@@ -26,7 +30,10 @@ deploy-stable-branch-production:
   extends: .deploy-production
   <<: *deploy-stable-branch
 
+.deploy-tag-base:
+
 .deploy-tag: &deploy-tag
+  extends: .deploy-tag-base
   only:
     - tags
 
