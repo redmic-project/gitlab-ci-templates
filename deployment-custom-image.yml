@@ -1,9 +1,29 @@
 .deploy-branch-base:
-  variables:
+  variables: &deploy-branch-base-variables
     DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
     DD_IMAGE_TAG: ${CI_COMMIT_SHA}
 
 .deploy-tag-base:
-  variables:
+  variables: &deploy-tag-base-variables
     DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
     DD_IMAGE_TAG: ${CI_COMMIT_TAG}
+
+deploy-support-branch-development:
+  variables:
+    <<: *deploy-branch-base-variables
+
+deploy-stable-branch-development:
+  variables:
+    <<: *deploy-branch-base-variables
+
+deploy-stable-branch-production:
+  variables:
+    <<: *deploy-branch-base-variables
+
+deploy-tag-development:
+  variables:
+    <<: *deploy-tag-base-variables
+
+deploy-tag-production:
+  variables:
+    <<: *deploy-tag-base-variables
