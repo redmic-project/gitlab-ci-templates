@@ -1,6 +1,6 @@
 .deploy-branch-base:
   variables: &deploy-branch-base-variables
-    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}
     DD_IMAGE_TAG: ${CI_COMMIT_SHA}
 
 .deploy-tag-base:
