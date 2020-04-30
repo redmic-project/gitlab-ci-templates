@@ -1,11 +1,11 @@
 include:
   - local: '/_deployment.yml'
 
-.deploy-branch-base:
+.deploy-branch-base: &deploy-branch-base
   stage: deploy
 
 .deploy-support-branch: &deploy-support-branch
-  extends: .deploy-branch-base
+  <<: *deploy-branch-base
   only:
     - branches
   except:
@@ -31,11 +31,11 @@ deploy-stable-branch-production:
   extends: .deploy-production
   <<: *deploy-stable-branch
 
-.deploy-tag-base:
+.deploy-tag-base: &deploy-tag-base
   stage: deploy
 
 .deploy-tag: &deploy-tag
-  extends: .deploy-tag-base
+  <<: *deploy-tag-base
   only:
     - tags
 
