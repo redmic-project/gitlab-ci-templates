@@ -2,7 +2,6 @@ include:
   - local: '/_deployment.yml'
 
 .deploy-branch-base: &deploy-branch-base
-  stage: deploy
 
 .deploy-support-branch: &deploy-support-branch
   <<: *deploy-branch-base
@@ -32,7 +31,6 @@ deploy-stable-branch-production:
   <<: *deploy-stable-branch
 
 .deploy-tag-base: &deploy-tag-base
-  stage: deploy
 
 .deploy-tag: &deploy-tag
   <<: *deploy-tag-base
