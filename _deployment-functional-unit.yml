@@ -42,20 +42,24 @@ include:
 
 .deploy-commands-development:
   extends: .deploy-commands
-  variables: *deploy-microservice-development-variables
+  variables:
+    <<: *deploy-microservice-development-variables
   environment: *deploy-microservice-development-environment
 
 .deploy-commands-production:
   extends: .deploy-commands
-  variables: *deploy-microservice-production-variables
+  variables:
+    <<: *deploy-microservice-production-variables
   environment: *deploy-microservice-production-environment
 
 .deploy-view-development:
   extends: .deploy-view
-  variables: *deploy-microservice-development-variables
+  variables:
+    <<: *deploy-microservice-development-variables
   environment: *deploy-microservice-development-environment
 
 .deploy-view-production:
   extends: .deploy-view
-  variables: *deploy-microservice-production-variables
+  variables:
+    <<: *deploy-microservice-production-variables
   environment: *deploy-microservice-production-environment
