@@ -1,113 +1,31 @@
-variables:
-  PACKAGING_IMAGE: docker:stable
-  DIND_IMAGE: docker:dind
-  GITLAB_REGISTRY_USER: gitlab-ci-token
-  GITLAB_REGISTRY_PASS: ${CI_JOB_TOKEN}
-  DOCKER_HUB_ROOT: redmic
-  DOCKER_BUILD_ARGS: ''
-
-.docker-env:
-  image: ${PACKAGING_IMAGE}
-  variables:
-    DOCKER_DRIVER: overlay2
-  services:
-    - ${DIND_IMAGE}
-
-.docker:
-  extends: .docker-env
-  variables:
-    DOCKER_DEFAULT_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-  before_script:
-    - docker login -u ${GITLAB_REGISTRY_USER} -p ${GITLAB_REGISTRY_PASS} ${CI_REGISTRY}
-
-.docker-operations:
-  stage: package
-  extends: .docker
-  after_script:
-    - docker push ${CI_REGISTRY_IMAGE}
-
-.docker-operations-build:
-  extends: .docker-operations
-  script:
-    - docker pull ${CI_REGISTRY_IMAGE}:latest || true
-    - >
-      docker build --cache-from ${CI_REGISTRY_IMAGE}:latest ${DOCKER_BUILD_ARGS}
-      -t ${DOCKER_DEFAULT_TAGGING}
-      -t ${DOCKER_SPECIFIC_TAGGING} .
-
-lint-dockerfile:
-  stage: package
-  extends: .docker-env
-  variables:
-    LINT_DOCKERFILE_IMAGE: hadolint/hadolint:latest
-    DOCKERFILE_PATH: Dockerfile
-  script:
-    - docker run --rm -i ${LINT_DOCKERFILE_IMAGE} < ${DOCKERFILE_PATH}
-  dependencies: []
-  allow_failure: true
-  except:
-    - schedules
+include:
+  - local: '/_packaging.yml'
+  - local: '/_docker-build.yml'
 
 docker-build-support-branch:
-  extends: .docker-operations-build
-  variables:
-    DOCKER_SPECIFIC_TAGGING: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}-latest
+  extends: .docker-build
   only:
     - branches
+    - tags
   except:
     - master
     - schedules
 
 docker-build-stable-branch:
-  extends: .docker-operations-build
-  variables:
-    DOCKER_SPECIFIC_TAGGING: ${CI_REGISTRY_IMAGE}:latest
+  extends: .docker-build
   only:
     - master
   except:
     - schedules
 
-docker-tag-gitlab-registry:
-  extends: .docker-operations
+.docker-tag-context: &docker-tag-context
   only:
     - tags
-  script:
-    - docker pull ${DOCKER_DEFAULT_TAGGING}
-    - docker tag ${DOCKER_DEFAULT_TAGGING} ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
 
-docker-tag-docker-hub:
-  extends: .docker-operations
-  only:
-    - tags
-  script:
-    - docker pull ${DOCKER_DEFAULT_TAGGING}
-    - docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASS}
-    - dockerHubImagePath="$(echo ${CI_PROJECT_PATH} | cut -d '/' -f 2- | sed 's/\//-/g')"
-    - dockerHubImage="${DOCKER_HUB_ROOT}/${dockerHubImagePath}"
-    - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:${CI_COMMIT_TAG}
-    - docker tag ${DOCKER_DEFAULT_TAGGING} ${dockerHubImage}:latest
-    - docker push ${dockerHubImage}
-  after_script: []
+docker-tag-gitlab:
+  extends: .docker-tag-gitlab
+  <<: *docker-tag-context
 
-docker-scan:
-  stage: test-package
-  extends: .docker
-  allow_failure: true
-  only:
-    - branches
-  except:
-    - schedules
-  script:
-    - docker run -d --name db arminc/clair-db:latest
-    - docker run -p 6060:6060 --link db:postgres -d --name clair arminc/clair-local-scan:v2.0.1
-    - apk add -U wget ca-certificates
-    - docker pull ${DOCKER_DEFAULT_TAGGING}
-    - wget https://github.com/arminc/clair-scanner/releases/download/v8/clair-scanner_linux_amd64
-    - mv clair-scanner_linux_amd64 clair-scanner
-    - chmod +x clair-scanner
-    - touch clair-whitelist.yml
-    - >
-      ./clair-scanner -c http://docker:6060 --ip $(hostname -i) -r gl-sast-container-report.json -l clair.log
-      -w clair-whitelist.yml ${DOCKER_DEFAULT_TAGGING} || true
-  artifacts:
-    paths: [gl-sast-container-report.json]
+docker-tag-dockerhub:
+  extends: .docker-tag-dockerhub
+  <<: *docker-tag-context
