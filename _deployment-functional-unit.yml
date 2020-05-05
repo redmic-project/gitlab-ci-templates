@@ -22,44 +22,40 @@ include:
 
 .deploy-microservice-development:
   extends: .deploy-development
-  variables: &deploy-microservice-development-variables
+  variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.dev.yml
     SPRING_PROFILES_ACTIVE: pre
     DD_SPRING_PROFILES_ACTIVE: pre
-  environment: &deploy-microservice-development-environment
+  environment:
     name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
     <<: *deploy-microservice-environment
 
 .deploy-microservice-production:
   extends: .deploy-production
-  variables: &deploy-microservice-production-variables
+  variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.prod.yml
     SPRING_PROFILES_ACTIVE: prod
     DD_SPRING_PROFILES_ACTIVE: prod
-  environment: &deploy-microservice-production-environment
+  environment:
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
     <<: *deploy-microservice-environment
 
 .deploy-commands-development:
-  extends: .deploy-commands
-  variables:
-    <<: *deploy-microservice-development-variables
-  environment: *deploy-microservice-development-environment
+  extends:
+    - .deploy-commands
+    - .deploy-microservice-development
 
 .deploy-commands-production:
-  extends: .deploy-commands
-  variables:
-    <<: *deploy-microservice-production-variables
-  environment: *deploy-microservice-production-environment
+  extends:
+    - .deploy-commands
+    - .deploy-microservice-production
 
 .deploy-view-development:
-  extends: .deploy-view
-  variables:
-    <<: *deploy-microservice-development-variables
-  environment: *deploy-microservice-development-environment
+  extends:
+    - .deploy-view
+    - .deploy-microservice-development
 
 .deploy-view-production:
-  extends: .deploy-view
-  variables:
-    <<: *deploy-microservice-production-variables
-  environment: *deploy-microservice-production-environment
+  extends:
+    - .deploy-view
+    - .deploy-microservice-production
