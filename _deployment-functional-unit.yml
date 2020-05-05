@@ -5,10 +5,6 @@ include:
   variables:
     SERVICES_TO_CHECK: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-microservice:
-  environment: &deploy-microservice-environment
-    url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
-
 .deploy-microservice-development:
   extends: .deploy-development
   variables:
@@ -17,7 +13,7 @@ include:
     DD_SPRING_PROFILES_ACTIVE: pre
   environment:
     name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
-    <<: *deploy-microservice-environment
+    url: https://${DEV_PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
 .deploy-microservice-production:
   extends: .deploy-production
@@ -27,7 +23,7 @@ include:
     DD_SPRING_PROFILES_ACTIVE: prod
   environment:
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
-    <<: *deploy-microservice-environment
+    url: https://${PRO_PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
 .deploy-commands:
   variables: &deploy-commands-variables
