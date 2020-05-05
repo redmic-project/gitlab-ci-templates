@@ -5,17 +5,6 @@ include:
   variables:
     SERVICES_TO_CHECK: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
-.deploy-commands:
-  extends: .deploy
-  variables:
-    FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
-    STATUS_CHECK_DELAY: 300
-
-.deploy-view:
-  extends: .deploy
-  variables:
-    FUNCTIONAL_UNIT_MICROSERVICE_NAME: view
-
 .deploy-microservice:
   environment: &deploy-microservice-environment
     url: https://${PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
@@ -40,22 +29,32 @@ include:
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
     <<: *deploy-microservice-environment
 
+.deploy-commands:
+  variables: &deploy-commands-variables
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
+    STATUS_CHECK_DELAY: 300
+
+.deploy-view:
+  variables: &deploy-view-variables
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: view
+    STATUS_CHECK_DELAY: 180
+
 .deploy-commands-development:
-  extends:
-    - .deploy-commands
-    - .deploy-microservice-development
+  extends: .deploy-microservice-development
+  variables:
+    <<: *deploy-commands-variables
 
 .deploy-commands-production:
-  extends:
-    - .deploy-commands
-    - .deploy-microservice-production
+  extends: .deploy-microservice-production
+  variables:
+    <<: *deploy-commands-variables
 
 .deploy-view-development:
-  extends:
-    - .deploy-view
-    - .deploy-microservice-development
+  extends: .deploy-microservice-development
+  variables:
+    <<: *deploy-view-variables
 
 .deploy-view-production:
-  extends:
-    - .deploy-view
-    - .deploy-microservice-production
+  extends: .deploy-microservice-production
+  variables:
+    <<: *deploy-view-variables
