@@ -14,7 +14,7 @@
   extends: .docker-operations
   stage: package
   variables:
-    COMPOSE_FILE_NAME: docker-compose.tmpl.yml
+    COMPOSE_FILE_NAME: docker-compose.tmpl.yml:docker-compose.dev.yml
   script: build
 
 .docker-tag:
