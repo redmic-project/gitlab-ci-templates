@@ -1,0 +1,37 @@
+include:
+  - template: Container-Scanning.gitlab-ci.yml
+
+.docker-env:
+  image: ${PACKAGING_IMAGE_NAME}:${PACKAGING_IMAGE_TAG}
+  variables:
+    PACKAGING_IMAGE_NAME: docker
+    PACKAGING_IMAGE_TAG: latest
+    DIND_IMAGE_NAME: docker
+    DIND_IMAGE_TAG: dind
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  services:
+    - ${DIND_IMAGE_NAME}:${DIND_IMAGE_TAG}
+
+lint-dockerfile:
+  extends: .docker-env
+  stage: pre-package
+  dependencies: []
+  variables:
+    LINT_IMAGE_NAME: hadolint/hadolint
+    LINT_IMAGE_TAG: latest
+    DOCKERFILE_PATH: Dockerfile
+  script:
+    - docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < ${DOCKERFILE_PATH}
+  allow_failure: true
+  only:
+    - branches
+  except:
+    - schedules
+
+container_scanning:
+  stage: post-package
+  only:
+    - branches
+  except:
+    - schedules
