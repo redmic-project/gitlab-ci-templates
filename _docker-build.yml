@@ -13,6 +13,8 @@
 .docker-build:
   extends: .docker-operations
   stage: package
+  variables:
+    COMPOSE_FILE_NAME: docker-compose.tmpl.yml
   script: build
 
 .docker-tag:
