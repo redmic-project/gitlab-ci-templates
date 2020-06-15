@@ -1,12 +1,17 @@
 include:
-  template: License-Management.gitlab-ci.yml
+  template: License-Scanning.gitlab-ci.yml
 
-license_management:
+license_scanning:
   stage: license-list
-  except:
-    - schedules
   artifacts:
     name: '${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME}'
     expire_in: '1 months'
     paths:
-      - gl-license-management-report.*
+      - gl-license-scanning-report.*
+  rules:
+    - if: $LICENSE_MANAGEMENT_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH &&
+          $GITLAB_FEATURES =~ /\blicense_scanning\b/
