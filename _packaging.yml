@@ -24,10 +24,12 @@ lint-dockerfile:
   script:
     - docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < ${DOCKERFILE_PATH}
   allow_failure: true
-  only:
-    - branches
-  except:
-    - schedules
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
 
 container_scanning:
   stage: post-package

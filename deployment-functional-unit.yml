@@ -12,11 +12,13 @@ include:
     DD_IMAGE_TAG: ${CI_COMMIT_TAG}
 
 .deploy-support-branch: &deploy-support-branch
-  only:
-    - branches
-  except:
-    - master
-    - schedules
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule" ||
+          $CI_COMMIT_BRANCH == "master"
+      when: never
+    - if: $CI_COMMIT_BRANCH
 
 deploy-commands-support-branch-development:
   extends: .deploy-commands-development
@@ -31,10 +33,12 @@ deploy-view-support-branch-development:
   <<: *deploy-support-branch
 
 .deploy-stable-branch: &deploy-stable-branch
-  only:
-    - master
-  except:
-    - schedules
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "master"
 
 deploy-commands-stable-branch-development:
   extends: .deploy-commands-development
@@ -61,8 +65,8 @@ deploy-view-stable-branch-production:
   <<: *deploy-stable-branch
 
 .deploy-tag: &deploy-tag
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
 
 deploy-commands-tag-development:
   extends: .deploy-commands-development

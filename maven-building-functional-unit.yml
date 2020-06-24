@@ -1,16 +1,13 @@
 include:
-  - local: '/maven-building.yml'
-
-variables:
-  TEST_OUTPUT_PATH: target
+  - local: '/_maven-building.yml'
 
 maven-build-lib:
   extends: .maven-build
   stage: build-lib
   variables:
     MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-lib
-    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-lib
     MAVEN_GOALS: deploy
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-lib
     BUILD_OUTPUT_PATH: target
 
 .maven-build-microservice:

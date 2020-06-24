@@ -11,8 +11,8 @@
     REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
     SERVICE: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}
   script: relaunch
-  only:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 scheduled-run-development:
   extends: .scheduled-run
