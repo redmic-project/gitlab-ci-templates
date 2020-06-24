@@ -2,21 +2,25 @@ include:
   - local: '/_deployment.yml'
 
 .deploy-support-branch: &deploy-support-branch
-  only:
-    - branches
-  except:
-    - master
-    - schedules
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule" ||
+          $CI_COMMIT_BRANCH == "master"
+      when: never
+    - if: $CI_COMMIT_BRANCH
 
 deploy-support-branch-development:
   extends: .deploy-development
   <<: *deploy-support-branch
 
 .deploy-stable-branch: &deploy-stable-branch
-  only:
-    - master
-  except:
-    - schedules
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "master"
 
 deploy-stable-branch-development:
   extends: .deploy-development
@@ -27,8 +31,8 @@ deploy-stable-branch-production:
   <<: *deploy-stable-branch
 
 .deploy-tag: &deploy-tag
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
 
 deploy-tag-development:
   extends: .deploy-development
