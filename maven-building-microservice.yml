@@ -1,13 +1,11 @@
 include:
-  - local: '/maven-building.yml'
-
-variables:
-  MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}
-  MAVEN_GOALS: verify spring-boot:repackage
-  PROJECT_ROOT_PATH: '.'
-  TEST_OUTPUT_PATH: target
-  BUILD_OUTPUT_PATH: dist
+  - local: '/_maven-building.yml'
 
 maven-build:
   extends: .maven-build
   stage: build
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}
+    MAVEN_GOALS: verify spring-boot:repackage
+    PROJECT_ROOT_PATH: '.'
+    BUILD_OUTPUT_PATH: dist
