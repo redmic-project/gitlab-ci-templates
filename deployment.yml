@@ -9,6 +9,7 @@ include:
           $CI_COMMIT_BRANCH == "master"
       when: never
     - if: $CI_COMMIT_BRANCH
+      when: manual
 
 deploy-support-branch-development:
   extends: .deploy-development
@@ -21,6 +22,7 @@ deploy-support-branch-development:
           $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
 
 deploy-stable-branch-development:
   extends: .deploy-development

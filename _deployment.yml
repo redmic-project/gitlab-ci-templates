@@ -15,7 +15,6 @@
     STATUS_CHECK_DELAY: 120
     STATUS_CHECK_MIN_HITS: 3
   script: deploy
-  when: manual
 
 .deploy-development:
   extends: .deploy
