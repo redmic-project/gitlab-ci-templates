@@ -20,6 +20,7 @@ include:
       when: never
     - if: $CI_COMMIT_BRANCH
       when: manual
+      allow_failure: true
 
 deploy-commands-support-branch-development:
   extends: .deploy-commands-development
@@ -41,6 +42,7 @@ deploy-view-support-branch-development:
       when: never
     - if: $CI_COMMIT_BRANCH == "master"
       when: manual
+      allow_failure: true
 
 deploy-commands-stable-branch-development:
   extends: .deploy-commands-development
@@ -70,6 +72,7 @@ deploy-view-stable-branch-production:
   rules:
     - if: $CI_COMMIT_TAG
       when: manual
+      allow_failure: true
 
 deploy-commands-tag-development:
   extends: .deploy-commands-development

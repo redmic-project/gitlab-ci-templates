@@ -10,6 +10,7 @@ include:
       when: never
     - if: $CI_COMMIT_BRANCH
       when: manual
+      allow_failure: true
 
 deploy-support-branch-development:
   extends: .deploy-development
@@ -23,6 +24,7 @@ deploy-support-branch-development:
       when: never
     - if: $CI_COMMIT_BRANCH == "master"
       when: manual
+      allow_failure: true
 
 deploy-stable-branch-development:
   extends: .deploy-development
@@ -36,6 +38,7 @@ deploy-stable-branch-production:
   rules:
     - if: $CI_COMMIT_TAG
       when: manual
+      allow_failure: true
 
 deploy-tag-development:
   extends: .deploy-development
