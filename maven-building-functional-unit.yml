@@ -14,7 +14,6 @@ maven-build-parent:
     MAVEN_GOALS: deploy
   script: mvn -U -B -N clean ${MAVEN_GOALS}
   after_script:
-    - ':'
   cache:
   artifacts:
 
