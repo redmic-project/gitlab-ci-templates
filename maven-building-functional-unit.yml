@@ -1,6 +1,23 @@
 include:
   - local: '/_maven-building.yml'
 
+.maven-build:
+  variables:
+    LOGGING_LEVEL_ROOT: error
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
+    LOGGING_LEVEL_ES_REDMIC: error
+
+maven-build-parent:
+  extends: .maven-build
+  stage: build-parent
+  variables:
+    MAVEN_GOALS: deploy
+  script: mvn -U -B -N clean ${MAVEN_GOALS}
+  after_script:
+    - ':'
+  cache:
+  artifacts:
+
 maven-build-lib:
   extends: .maven-build
   stage: build-lib
