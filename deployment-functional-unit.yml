@@ -13,11 +13,12 @@ include:
 
 .deploy-support-branch: &deploy-support-branch
   rules:
-    - if: $CI_COMMIT_TAG ||
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
           $CI_PIPELINE_SOURCE == "schedule" ||
           $CI_COMMIT_BRANCH == "master"
       when: never
-    - if: $CI_COMMIT_BRANCH || $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH
       when: manual
 
 deploy-commands-support-branch-development:
@@ -34,10 +35,11 @@ deploy-view-support-branch-development:
 
 .deploy-stable-branch: &deploy-stable-branch
   rules:
-    - if: $CI_COMMIT_TAG ||
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
           $CI_PIPELINE_SOURCE == "schedule"
       when: never
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_BRANCH == "master"
       when: manual
 
 deploy-commands-stable-branch-development:
@@ -66,7 +68,7 @@ deploy-view-stable-branch-production:
 
 .deploy-tag: &deploy-tag
   rules:
-    - if: $CI_COMMIT_TAG || $CI_MERGE_REQUEST_ID
+    - if: $CI_COMMIT_TAG
       when: manual
 
 deploy-commands-tag-development:
