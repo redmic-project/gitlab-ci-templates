@@ -1,16 +1,18 @@
 include:
   - local: '/_deployment.yml'
 
+variables:
+  PROJECT_PARENT_NAME: functional-unit
+
 .deploy:
   variables:
-    SERVICES_TO_CHECK: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+    STACK: ${PROJECT_PARENT_NAME}
+    SERVICES_TO_CHECK: ${PROJECT_PARENT_NAME}_${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
 
 .deploy-microservice-development:
   extends: .deploy-development
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.dev.yml
-    SPRING_PROFILES_ACTIVE: pre
-    DD_SPRING_PROFILES_ACTIVE: pre
   environment:
     name: dev/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
     url: https://${DEV_PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
@@ -19,8 +21,6 @@ include:
   extends: .deploy-production
   variables:
     COMPOSE_FILE: docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.tmpl.yml:docker-compose.${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}.prod.yml
-    SPRING_PROFILES_ACTIVE: prod
-    DD_SPRING_PROFILES_ACTIVE: prod
   environment:
     name: pro/${CI_PROJECT_NAME}-${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
     url: https://${PRO_PUBLIC_HOSTNAME}/api/${CI_PROJECT_NAME}/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
