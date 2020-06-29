@@ -4,10 +4,8 @@ include:
 license_scanning:
   stage: license-list
   variables:
-    A_MAVEN_SETTINGS_URL: https://gitlab.com/redmic-project/docker/maven/-/raw/master/config/settings.xml
-    A_MAVEN_SETTINGS_NAME: settings.xml
-    LICENSE_MANAGEMENT_SETUP_CMD: curl -q -o ${A_MAVEN_SETTINGS_NAME} ${A_MAVEN_SETTINGS_URL}
-    MAVEN_CLI_OPTS: -DskipTests --settings ${A_MAVEN_SETTINGS_NAME}
+    LICENSE_MANAGEMENT_SETUP_CMD: curl -q -o settings.xml https://gitlab.com/redmic-project/docker/maven/-/raw/master/config/settings.xml
+    MAVEN_CLI_OPTS: -DskipTests --settings settings.xml
   artifacts:
     name: '${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME}'
     expire_in: '1 months'
