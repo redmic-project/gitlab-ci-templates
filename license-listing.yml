@@ -4,7 +4,7 @@ include:
 license_scanning:
   stage: license-list
   variables:
-    LICENSE_MANAGEMENT_SETUP_CMD: curl -q -o settings.xml https://gitlab.com/redmic-project/docker/maven/-/raw/master/config/settings.xml
+    LICENSE_MANAGEMENT_SETUP_CMD: curl -s -o settings.xml https://gitlab.com/redmic-project/docker/maven/-/raw/master/config/settings.xml
     MAVEN_CLI_OPTS: -DskipTests --settings settings.xml
   artifacts:
     name: '${CI_PROJECT_NAME}-${CI_COMMIT_REF_NAME}'
