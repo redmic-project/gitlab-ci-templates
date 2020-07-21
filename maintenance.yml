@@ -11,8 +11,6 @@
     REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
     SERVICE: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}
   script: relaunch
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 scheduled-run-development:
   extends: .scheduled-run
@@ -20,6 +18,10 @@ scheduled-run-development:
     SSH_REMOTE: ${DEV_SSH_REMOTE}
     SSH_PORT: ${DEV_SSH_PORT}
     DEPLOY_KEY: ${DEV_DEPLOY_KEY}
+  rules:
+    - if: $DEVELOPMENT_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 scheduled-run-production:
   extends: .scheduled-run
@@ -27,3 +29,7 @@ scheduled-run-production:
     SSH_REMOTE: ${PRO_SSH_REMOTE}
     SSH_PORT: ${PRO_SSH_PORT}
     DEPLOY_KEY: ${PRO_DEPLOY_KEY}
+  rules:
+    - if: $PRODUCTION_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
