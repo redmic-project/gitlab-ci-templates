@@ -1,0 +1,88 @@
+include:
+  - local: '/_deployment.yml'
+
+.deploy-external-service-stage: &deploy-external-service-stage
+  stage: deploy-external-service
+
+.deploy-external-service:
+  variables: &deploy-external-service-variables
+    DEPLOY_DIR_NAME: deploy_external-service
+    EXTERNAL_SERVICE_DEPLOY_FILES: .env docker-compose.tmpl.yml docker-compose.dev.yml docker-compose.prod.yml
+    EXTERNAL_SERVICE_REPOSITORY_BRANCH: master
+
+.deploy-external-service-before_script: &deploy-external-service-before_script
+  before_script:
+    - >
+      mkdir -p ${DEPLOY_DIR_NAME};
+      cd ${DEPLOY_DIR_NAME};
+      urlBase="${EXTERNAL_SERVICE_REPOSITORY_URL}/-/raw/${EXTERNAL_SERVICE_REPOSITORY_BRANCH}/deploy";
+      for deployFile in ${EXTERNAL_SERVICE_DEPLOY_FILES};
+      do
+        wget -q "$(echo ${urlBase}/${deployFile})";
+      done;
+      cd -;
+
+.deploy-external-service-development:
+  extends: .deploy-development
+  <<: *deploy-external-service-stage
+  variables:
+    <<: *deploy-external-service-variables
+  <<: *deploy-external-service-before_script
+  environment:
+    name: dev/external-service
+
+.deploy-external-service-production:
+  extends: .deploy-production
+  <<: *deploy-external-service-stage
+  variables:
+    <<: *deploy-external-service-variables
+  <<: *deploy-external-service-before_script
+  environment:
+    name: pro/external-service
+
+.deploy-external-service-support-branch: &deploy-external-service-support-branch
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule" ||
+          $CI_COMMIT_BRANCH == "master"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+      allow_failure: true
+
+.deploy-external-service-support-branch-development:
+  extends: .deploy-external-service-development
+  <<: *deploy-external-service-support-branch
+
+.deploy-external-service-stable-branch: &deploy-external-service-stable-branch
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: manual
+      allow_failure: true
+
+.deploy-external-service-stable-branch-development:
+  extends: .deploy-external-service-development
+  <<: *deploy-external-service-stable-branch
+
+.deploy-external-service-stable-branch-production:
+  extends: .deploy-external-service-production
+  <<: *deploy-external-service-stable-branch
+
+.deploy-external-service-tag: &deploy-external-service-tag
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+      allow_failure: true
+
+.deploy-external-service-tag-development:
+  extends: .deploy-external-service-development
+  <<: *deploy-external-service-tag
+
+.deploy-external-service-tag-production:
+  extends: .deploy-external-service-production
+  <<: *deploy-external-service-tag

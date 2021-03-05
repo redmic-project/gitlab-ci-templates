@@ -1,0 +1,51 @@
+include:
+  - local: '/_deployment-external-service.yml'
+
+.deploy-backup-postgresql:
+  variables: &deploy-backup-postgresql-variables
+    EXTERNAL_SERVICE_REPOSITORY_URL: https://gitlab.com/redmic-project/postgres/backup-db
+    DD_BACKUP_POSTGRESQL_IMAGE_NAME: registry.gitlab.com/redmic-project/postgres/backup-postgresql
+    DD_BACKUP_POSTGRESQL_IMAGE_TAG: latest
+
+.deploy-backup-postgresql-development:
+  environment: &deploy-backup-postgresql-development-environment
+    name: dev/backup-postgresql
+
+.deploy-backup-postgresql-production:
+  environment: &deploy-backup-postgresql-production-environment
+    name: pro/backup-postgresql
+
+deploy-backup-postgresql-support-branch-development:
+  extends: .deploy-external-service-support-branch-development
+  variables:
+    <<: *deploy-backup-postgresql-variables
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+deploy-backup-postgresql-stable-branch-development:
+  extends: .deploy-external-service-stable-branch-development
+  variables:
+    <<: *deploy-backup-postgresql-variables
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+deploy-backup-postgresql-stable-branch-production:
+  extends: .deploy-external-service-stable-branch-production
+  variables:
+    <<: *deploy-backup-postgresql-variables
+  environment:
+    <<: *deploy-backup-postgresql-production-environment
+
+deploy-backup-postgresql-tag-development:
+  extends: .deploy-external-service-tag-development
+  variables:
+    <<: *deploy-backup-postgresql-variables
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+deploy-backup-postgresql-tag-production:
+  extends: .deploy-external-service-tag-production
+  variables:
+    <<: *deploy-backup-postgresql-variables
+  environment:
+    <<: *deploy-backup-postgresql-production-environment
