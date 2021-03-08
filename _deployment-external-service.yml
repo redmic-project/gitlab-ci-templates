@@ -1,6 +1,3 @@
-include:
-  - local: '/_deployment.yml'
-
 .deploy-external-service-stage: &deploy-external-service-stage
   stage: deploy-external-service
 
