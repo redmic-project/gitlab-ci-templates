@@ -3,9 +3,7 @@ include:
 
 .deploy-backup-postgresql:
   variables: &deploy-backup-postgresql-variables
-    EXTERNAL_SERVICE_REPOSITORY_URL: https://gitlab.com/redmic-project/postgres/backup-postgresql
-    DD_BACKUP_POSTGRESQL_IMAGE_NAME: registry.gitlab.com/redmic-project/postgres/backup-postgresql
-    DD_BACKUP_POSTGRESQL_IMAGE_TAG: latest
+    EXTERNAL_SERVICE_PROJECT_ID: 7278179
 
 .deploy-backup-postgresql-development:
   environment: &deploy-backup-postgresql-development-environment

@@ -1,39 +1,83 @@
-.deploy-external-service-stage: &deploy-external-service-stage
-  stage: deploy-external-service
-
 .deploy-external-service:
-  variables: &deploy-external-service-variables
+  stage: deploy-external-service
+  variables:
     DEPLOY_DIR_NAME: deploy_external-service
-    EXTERNAL_SERVICE_DEPLOY_FILES: .env docker-compose.tmpl.yml docker-compose.dev.yml docker-compose.prod.yml
+    EXTERNAL_SERVICE_USE_SNIPPETS: 0
+    EXTERNAL_SERVICE_REPOSITORY_API_HOST: https://gitlab.com
+    EXTERNAL_SERVICE_DEPLOY_FILES: deploy/.env deploy/docker-compose.tmpl.yml deploy/docker-compose.dev.yml deploy/docker-compose.prod.yml
     EXTERNAL_SERVICE_REPOSITORY_BRANCH: master
-
-.deploy-external-service-before_script: &deploy-external-service-before_script
   before_script:
     - >
+      echo "Going to download deployment resources for external service";
+      if [ -z "${EXTERNAL_SERVICE_PROJECT_ID}" ];
+      then
+        echo "Error, 'EXTERNAL_SERVICE_PROJECT_ID' variable is unset";
+        exit 1;
+      fi;
+      if [ -z "${EXTERNAL_SERVICE_REPOSITORY_TOKEN}" ];
+      then
+        echo "Warning, 'EXTERNAL_SERVICE_REPOSITORY_TOKEN' variable is unset, trying without authentication";
+      fi;
+      getFile() {
+        echo "Downloading '$(echo ${2})'";
+        if [ -z "${EXTERNAL_SERVICE_REPOSITORY_TOKEN}" ];
+        then
+          wget -q -O "$(echo ${2})" "$(echo ${1})";
+        else
+          wget -q --header "PRIVATE-TOKEN: ${EXTERNAL_SERVICE_REPOSITORY_TOKEN}" -O "$(echo ${2})" "$(echo ${1})";
+        fi;
+        if [ ${?} -ne 0 ];
+        then
+          echo "Error, cannot download '$(echo ${2})'";
+          return 1;
+        fi;
+      };
       mkdir -p ${DEPLOY_DIR_NAME};
       cd ${DEPLOY_DIR_NAME};
-      urlBase="${EXTERNAL_SERVICE_REPOSITORY_URL}/-/raw/${EXTERNAL_SERVICE_REPOSITORY_BRANCH}/deploy";
-      for deployFile in ${EXTERNAL_SERVICE_DEPLOY_FILES};
-      do
-        wget -q "$(echo ${urlBase}/${deployFile})";
-      done;
-      cd -;
+      if [ "${EXTERNAL_SERVICE_USE_SNIPPETS}" -eq 1 ];
+      then
+        if [ -z "${EXTERNAL_SERVICE_SNIPPET_FILES}" ];
+        then
+          echo "Error, 'EXTERNAL_SERVICE_SNIPPET_FILES' variable is unset";
+          exit 1;
+        fi;
+        urlBase="${EXTERNAL_SERVICE_REPOSITORY_API_HOST}/api/v4/projects/${EXTERNAL_SERVICE_PROJECT_ID}/snippets";
+        for snippetFile in ${EXTERNAL_SERVICE_SNIPPET_FILES};
+        do
+          wgetUrl="$(echo ${urlBase})/$(echo ${snippetFile} | rev | cut -d ':' -f1 | rev)/raw";
+          wgetOut="$(echo ${snippetFile} | cut -d ':' -f1)";
+          if ! getFile "$(echo ${wgetUrl})" "$(echo ${wgetOut})";
+          then
+            exit 1;
+          fi;
+        done;
+      else
+        echo "Warning, 'repository/files' API is buggy with private repositories at GitLab v13.4.3 (at least). Use snippets instead as alternative if you have any problem";
+        urlBase="${EXTERNAL_SERVICE_REPOSITORY_API_HOST}/api/v4/projects/${EXTERNAL_SERVICE_PROJECT_ID}/repository/files";
+        for deployFile in ${EXTERNAL_SERVICE_DEPLOY_FILES};
+        do
+          wgetUrl="$(echo ${urlBase})/$(echo ${deployFile} | sed 's/\//%2F/g')/raw?ref=${EXTERNAL_SERVICE_REPOSITORY_BRANCH}";
+          wgetOutput="$(echo ${deployFile} | rev | cut -d '/' -f1 | rev)";
+          if ! getFile "$(echo ${wgetUrl})" "$(echo ${wgetOut})";
+          then
+            exit 1;
+          fi;
+        done;
+      fi;
+      echo "Deployment resources for external service successfully downloaded";
+      cd - > /dev/null;
 
 .deploy-external-service-development:
-  extends: .deploy-development
-  <<: *deploy-external-service-stage
-  variables:
-    <<: *deploy-external-service-variables
-  <<: *deploy-external-service-before_script
+  extends:
+    - .deploy-development
+    - .deploy-external-service
   environment:
     name: dev/external-service
 
 .deploy-external-service-production:
-  extends: .deploy-production
-  <<: *deploy-external-service-stage
-  variables:
-    <<: *deploy-external-service-variables
-  <<: *deploy-external-service-before_script
+  extends:
+    - .deploy-production
+    - .deploy-external-service
   environment:
     name: pro/external-service
 
