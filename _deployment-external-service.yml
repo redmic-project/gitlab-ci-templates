@@ -57,7 +57,7 @@
         for deployFile in ${EXTERNAL_SERVICE_DEPLOY_FILES};
         do
           wgetUrl="$(echo ${urlBase})/$(echo ${deployFile} | sed 's/\//%2F/g')/raw?ref=${EXTERNAL_SERVICE_REPOSITORY_BRANCH}";
-          wgetOutput="$(echo ${deployFile} | rev | cut -d '/' -f1 | rev)";
+          wgetOut="$(echo ${deployFile} | rev | cut -d '/' -f1 | rev)";
           if ! getFile "$(echo ${wgetUrl})" "$(echo ${wgetOut})";
           then
             exit 1;
