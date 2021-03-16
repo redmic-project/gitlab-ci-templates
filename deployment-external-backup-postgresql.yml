@@ -1,8 +1,8 @@
 include:
   - local: '/_deployment-external-service.yml'
 
-.deploy-backup-postgresql:
-  variables: &deploy-backup-postgresql-variables
+.deploy-external-service:
+  variables:
     EXTERNAL_SERVICE_PROJECT_ID: 7278179
 
 .deploy-backup-postgresql-development:
@@ -15,35 +15,25 @@ include:
 
 deploy-backup-postgresql-support-branch-development:
   extends: .deploy-external-service-support-branch-development
-  variables:
-    <<: *deploy-backup-postgresql-variables
   environment:
     <<: *deploy-backup-postgresql-development-environment
 
 deploy-backup-postgresql-stable-branch-development:
   extends: .deploy-external-service-stable-branch-development
-  variables:
-    <<: *deploy-backup-postgresql-variables
   environment:
     <<: *deploy-backup-postgresql-development-environment
 
 deploy-backup-postgresql-stable-branch-production:
   extends: .deploy-external-service-stable-branch-production
-  variables:
-    <<: *deploy-backup-postgresql-variables
   environment:
     <<: *deploy-backup-postgresql-production-environment
 
 deploy-backup-postgresql-tag-development:
   extends: .deploy-external-service-tag-development
-  variables:
-    <<: *deploy-backup-postgresql-variables
   environment:
     <<: *deploy-backup-postgresql-development-environment
 
 deploy-backup-postgresql-tag-production:
   extends: .deploy-external-service-tag-production
-  variables:
-    <<: *deploy-backup-postgresql-variables
   environment:
     <<: *deploy-backup-postgresql-production-environment
