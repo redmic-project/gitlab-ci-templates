@@ -1,0 +1,18 @@
+include:
+  - local: '/deployment-external-service/_base.yml'
+  - local: '/deployment-external-service/_backup-files.yml'
+
+deploy-backup-files-support-branch-development:
+  extends: .deploy-backup-files-support-branch-development
+
+deploy-backup-files-stable-branch-development:
+  extends: .deploy-backup-files-stable-branch-development
+
+deploy-backup-files-stable-branch-production:
+  extends: .deploy-backup-files-stable-branch-production
+
+deploy-backup-files-tag-development:
+  extends: .deploy-backup-files-tag-development
+
+deploy-backup-files-tag-production:
+  extends: .deploy-backup-files-tag-production

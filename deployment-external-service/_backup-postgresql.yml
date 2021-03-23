@@ -1,0 +1,46 @@
+.deploy-external-backup-postgresql:
+  variables:
+    EXTERNAL_SERVICE_PROJECT_ID: 7278179
+
+.deploy-backup-postgresql-development:
+  environment: &deploy-backup-postgresql-development-environment
+    name: dev/backup-postgresql
+
+.deploy-backup-postgresql-production:
+  environment: &deploy-backup-postgresql-production-environment
+    name: pro/backup-postgresql
+
+.deploy-backup-postgresql-support-branch-development:
+  extends:
+    - .deploy-external-service-support-branch-development
+    - .deploy-external-backup-postgresql
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+.deploy-backup-postgresql-stable-branch-development:
+  extends:
+    - .deploy-external-service-stable-branch-development
+    - .deploy-external-backup-postgresql
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+.deploy-backup-postgresql-stable-branch-production:
+  extends:
+    - .deploy-external-service-stable-branch-production
+    - .deploy-external-backup-postgresql
+  environment:
+    <<: *deploy-backup-postgresql-production-environment
+
+.deploy-backup-postgresql-tag-development:
+  extends:
+    - .deploy-external-service-tag-development
+    - .deploy-external-backup-postgresql
+  environment:
+    <<: *deploy-backup-postgresql-development-environment
+
+.deploy-backup-postgresql-tag-production:
+  extends:
+    - .deploy-external-service-tag-production
+    - .deploy-external-backup-postgresql
+  environment:
+    <<: *deploy-backup-postgresql-production-environment

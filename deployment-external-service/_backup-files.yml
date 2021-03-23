@@ -1,0 +1,46 @@
+.deploy-external-backup-files:
+  variables:
+    EXTERNAL_SERVICE_PROJECT_ID: 25187593
+
+.deploy-backup-files-development:
+  environment: &deploy-backup-files-development-environment
+    name: dev/backup-files
+
+.deploy-backup-files-production:
+  environment: &deploy-backup-files-production-environment
+    name: pro/backup-files
+
+.deploy-backup-files-support-branch-development:
+  extends:
+    - .deploy-external-service-support-branch-development
+    - .deploy-external-backup-files
+  environment:
+    <<: *deploy-backup-files-development-environment
+
+.deploy-backup-files-stable-branch-development:
+  extends:
+    - .deploy-external-service-stable-branch-development
+    - .deploy-external-backup-files
+  environment:
+    <<: *deploy-backup-files-development-environment
+
+.deploy-backup-files-stable-branch-production:
+  extends:
+    - .deploy-external-service-stable-branch-production
+    - .deploy-external-backup-files
+  environment:
+    <<: *deploy-backup-files-production-environment
+
+.deploy-backup-files-tag-development:
+  extends:
+    - .deploy-external-service-tag-development
+    - .deploy-external-backup-files
+  environment:
+    <<: *deploy-backup-files-development-environment
+
+.deploy-backup-files-tag-production:
+  extends:
+    - .deploy-external-service-tag-production
+    - .deploy-external-backup-files
+  environment:
+    <<: *deploy-backup-files-production-environment
