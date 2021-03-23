@@ -1,0 +1,18 @@
+include:
+  - local: '/deployment-external-service/_base.yml'
+  - local: '/deployment-external-service/_backup-postgresql.yml'
+
+deploy-backup-postgresql-support-branch-development:
+  extends: .deploy-backup-postgresql-support-branch-development
+
+deploy-backup-postgresql-stable-branch-development:
+  extends: .deploy-backup-postgresql-stable-branch-development
+
+deploy-backup-postgresql-stable-branch-production:
+  extends: .deploy-backup-postgresql-stable-branch-production
+
+deploy-backup-postgresql-tag-development:
+  extends: .deploy-backup-postgresql-tag-development
+
+deploy-backup-postgresql-tag-production:
+  extends: .deploy-backup-postgresql-tag-production
