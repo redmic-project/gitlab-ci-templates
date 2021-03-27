@@ -33,9 +33,11 @@ lint-dockerfile:
 
 container_scanning_deprecated:
   stage: post-package
+  script: ':'
 
 container_scanning_new:
   stage: post-package
+  script: ':'
 
 container_scanning:
   stage: post-package
