@@ -34,25 +34,10 @@ lint-dockerfile:
 container_scanning:
   stage: post-package
   rules:
-    - if: $CONTAINER_SCANNING_DISABLED
-      when: never
-    - if: $CI_MERGE_REQUEST_ID ||
+    - if: $CONTAINER_SCANNING_DISABLED ||
+          $CI_MERGE_REQUEST_ID ||
           $CI_COMMIT_TAG ||
           $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_COMMIT_BRANCH &&
-          $GITLAB_FEATURES =~ /\bcontainer_scanning\b/ &&
-          $CS_MAJOR_VERSION =~ /^[0-3]$/
-
-container_scanning_new:
-  stage: post-package
-  rules:
-    - if: $CONTAINER_SCANNING_DISABLED
-      when: never
-    - if: $CI_MERGE_REQUEST_ID ||
-          $CI_COMMIT_TAG ||
-          $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_COMMIT_BRANCH &&
-          $GITLAB_FEATURES =~ /\bcontainer_scanning\b/ &&
-          $CS_MAJOR_VERSION !~ /^[0-3]$/
+          $GITLAB_FEATURES =~ /\bcontainer_scanning\b/
