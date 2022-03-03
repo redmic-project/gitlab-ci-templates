@@ -1,0 +1,35 @@
+.scheduled-run:
+  stage: maintenance
+  dependencies: []
+  image: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
+  variables:
+    DOCKER_DEPLOY_IMAGE_NAME: redmic/docker-docker-deploy
+    DOCKER_DEPLOY_IMAGE_TAG: latest
+    STACK: ${CI_PROJECT_NAME}
+    REGISTRY_URL: ${CI_REGISTRY}
+    REGISTRY_USER: ${CI_DEPLOY_USER}
+    REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
+    SERVICE: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}
+  script: relaunch
+
+.scheduled-run-development:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+    SSH_PORT: ${DEV_SSH_PORT}
+    DEPLOY_KEY: ${DEV_DEPLOY_KEY}
+  rules:
+    - if: $DEVELOPMENT_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+.scheduled-run-production:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
+    SSH_PORT: ${PRO_SSH_PORT}
+    DEPLOY_KEY: ${PRO_DEPLOY_KEY}
+  rules:
+    - if: $PRODUCTION_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
