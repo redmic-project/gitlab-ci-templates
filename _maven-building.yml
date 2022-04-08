@@ -16,6 +16,7 @@
         coverage=$(xmllint --html --xpath "${TEST_COVERAGE_XPATH}" "${coveragePath}");
         echo "Coverage - ${coverage}";
       fi
+  coverage: '/^Coverage\s-\s(\d+(?:\.\d+)?%)/'
   after_script:
     - rm -rf .m2/repository/es
   cache:
