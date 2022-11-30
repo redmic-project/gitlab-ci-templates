@@ -1,6 +1,7 @@
 .scheduled-run:
   stage: maintenance
   dependencies: []
+  needs: []
   image: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
   variables:
     DOCKER_DEPLOY_IMAGE_NAME: redmic/docker-docker-deploy
