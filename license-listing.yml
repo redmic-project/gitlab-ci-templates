@@ -1,9 +1,11 @@
 include:
+  # The legacy License Compliance analyzer was deprecated in GitLab 15.9 and removed in GitLab 16.3.
   template: License-Scanning.gitlab-ci.yml
 
 license_scanning:
   stage: license-list
   variables:
+    LICENSE_MANAGEMENT_VERSION: 4
     LICENSE_MANAGEMENT_SETUP_CMD: curl -s -o settings.xml https://gitlab.com/redmic-project/docker/maven/-/raw/master/config/settings.xml
     MAVEN_CLI_OPTS: -DskipTests --settings settings.xml
   artifacts:
