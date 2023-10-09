@@ -4,7 +4,21 @@ include:
 
 gemnasium-dependency_scanning:
   rules:
+    - if: $DEPENDENCY_SCANNING_DISABLED == 'true' || $DEPENDENCY_SCANNING_DISABLED == '1'
+      when: never
+    - if: $DS_EXCLUDED_ANALYZERS =~ /gemnasium([^-]|$)/
+      when: never
     - if: $CI_MERGE_REQUEST_ID ||
           $CI_COMMIT_TAG ||
           $CI_PIPELINE_SOURCE == "schedule"
       when: never
+    - if: $CI_COMMIT_BRANCH &&
+          $GITLAB_FEATURES =~ /\bdependency_scanning\b/ &&
+          $CI_GITLAB_FIPS_MODE == "true"
+      exists: !reference [.gemnasium-shared-rule, exists]
+      variables:
+        DS_IMAGE_SUFFIX: "-fips"
+        DS_REMEDIATE: "false"
+    - if: $CI_COMMIT_BRANCH &&
+          $GITLAB_FEATURES =~ /\bdependency_scanning\b/
+      exists: !reference [.gemnasium-shared-rule, exists]
