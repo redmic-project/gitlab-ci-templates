@@ -1,6 +1,6 @@
 include:
   # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml
-  template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  template: Dependency-Scanning.gitlab-ci.yml
 
 gemnasium-dependency_scanning:
   rules:

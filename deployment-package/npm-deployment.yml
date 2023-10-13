@@ -1,0 +1,3 @@
+include:
+  # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/npm.gitlab-ci.yml
+  template: npm.gitlab-ci.yml
