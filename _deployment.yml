@@ -40,6 +40,7 @@
         if [ ! -z ${COMPOSE_FILE} ];
         then
           echo "Automatically set COMPOSE_FILE to '${COMPOSE_FILE}'";
+          export COMPOSE_FILE="${COMPOSE_FILE}";
         fi;
       fi;
   script: deploy
