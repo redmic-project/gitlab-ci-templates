@@ -14,7 +14,50 @@
   extends: .docker-operations
   stage: package
   variables:
-    COMPOSE_FILE_NAME: docker-compose.tmpl.yml:docker-compose.dev.yml
+    NEW_COMPOSE_FILE_NAME: compose.tmpl.yaml:compose.dev.yaml
+    OLD_COMPOSE_FILE_NAME: docker-compose.tmpl.yml:docker-compose.dev.yml
+  before_script:
+    - >
+      for directory in ${COMPOSE_PROJECT_DIRECTORY:-build deploy .};
+      do
+        if [ -z ${COMPOSE_FILE_NAME} ];
+        then
+          firstNewComposeFile=$(echo "${NEW_COMPOSE_FILE_NAME}" | cut -d ':' -f 1);
+          newSingleComposeFile=compose.yaml;
+          firstOldComposeFile=$(echo "${OLD_COMPOSE_FILE_NAME}" | cut -d ':' -f 1);
+          oldSingleComposeFile=docker-compose.yml;
+          if [ -f ${directory}/${firstNewComposeFile} ];
+          then
+            echo "Detected '${directory}/${firstNewComposeFile}' compose file, nice!";
+            composeFileName="${NEW_COMPOSE_FILE_NAME}";
+          elif [ -f ${directory}/${newSingleComposeFile} ];
+          then
+            echo "Detected '${directory}/${newSingleComposeFile}' compose file, nice!";
+            composeFileName="${newSingleComposeFile}";
+          elif [ -f ${directory}/${firstOldComposeFile} ];
+          then
+            echo "Detected '${directory}/${firstOldComposeFile}' compose file (old naming)";
+            composeFileName="${OLD_COMPOSE_FILE_NAME}";
+          elif [ -f ${directory}/${oldSingleComposeFile} ];
+          then
+            echo "Detected '${directory}/${oldSingleComposeFile}' compose file (old naming)";
+            composeFileName="${oldSingleComposeFile}";
+          else
+            echo "No compose file detected at '${directory}/'";
+          fi;
+          if [ ! -z ${composeFileName} ];
+          then
+            echo "Automatically set COMPOSE_FILE_NAME to '${composeFileName}' and COMPOSE_PROJECT_DIRECTORY to '${directory}'";
+            export COMPOSE_FILE_NAME="${composeFileName}";
+            export COMPOSE_PROJECT_DIRECTORY="${directory}";
+            break;
+          fi;
+        fi;
+      done;
+      if [ -z ${COMPOSE_FILE_NAME} ];
+      then
+        echo "No compose file specified or detected, using docker-build default for COMPOSE_FILE_NAME";
+      fi;
   script: build
 
 .docker-tag:
