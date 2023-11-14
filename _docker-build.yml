@@ -29,27 +29,28 @@
           if [ -f ${directory}/${firstNewComposeFile} ];
           then
             echo "Detected '${directory}/${firstNewComposeFile}' compose file, nice!";
-            COMPOSE_FILE_NAME="${NEW_COMPOSE_FILE_NAME}";
+            composeFileName="${NEW_COMPOSE_FILE_NAME}";
           elif [ -f ${directory}/${newSingleComposeFile} ];
           then
             echo "Detected '${directory}/${newSingleComposeFile}' compose file, nice!";
-            COMPOSE_FILE_NAME="${newSingleComposeFile}";
+            composeFileName="${newSingleComposeFile}";
           elif [ -f ${directory}/${firstOldComposeFile} ];
           then
             echo "Detected '${directory}/${firstOldComposeFile}' compose file (old naming)";
-            COMPOSE_FILE_NAME="${OLD_COMPOSE_FILE_NAME}";
+            composeFileName="${OLD_COMPOSE_FILE_NAME}";
           elif [ -f ${directory}/${oldSingleComposeFile} ];
           then
             echo "Detected '${directory}/${oldSingleComposeFile}' compose file (old naming)";
-            COMPOSE_FILE_NAME="${oldSingleComposeFile}";
+            composeFileName="${oldSingleComposeFile}";
           else
             echo "No compose file detected at '${directory}/'";
           fi;
-          if [ ! -z ${COMPOSE_FILE_NAME} ];
+          if [ ! -z ${composeFileName} ];
           then
-            echo "Automatically set COMPOSE_FILE_NAME to '${COMPOSE_FILE_NAME}' and COMPOSE_PROJECT_DIRECTORY to '${COMPOSE_PROJECT_DIRECTORY}'";
-            export COMPOSE_FILE_NAME="${COMPOSE_FILE_NAME}";
+            echo "Automatically set COMPOSE_FILE_NAME to '${composeFileName}' and COMPOSE_PROJECT_DIRECTORY to '${directory}'";
+            export COMPOSE_FILE_NAME="${composeFileName}";
             export COMPOSE_PROJECT_DIRECTORY="${directory}";
+            break;
           fi;
         fi;
       done;

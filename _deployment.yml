@@ -21,26 +21,26 @@
         if [ -f ${DEPLOY_DIR_NAME}/${firstNewComposeFile} ];
         then
           echo "Detected '${firstNewComposeFile}' compose file, nice!";
-          COMPOSE_FILE="${NEW_COMPOSE_FILE}";
+          composeFile="${NEW_COMPOSE_FILE}";
         elif [ -f ${DEPLOY_DIR_NAME}/${newSingleComposeFile} ];
         then
           echo "Detected '${newSingleComposeFile}' compose file, nice!";
-          COMPOSE_FILE="${newSingleComposeFile}";
+          composeFile="${newSingleComposeFile}";
         elif [ -f ${DEPLOY_DIR_NAME}/${firstOldComposeFile} ];
         then
           echo "Detected '${firstOldComposeFile}' compose file (old naming)";
-          COMPOSE_FILE="${OLD_COMPOSE_FILE}";
+          composeFile="${OLD_COMPOSE_FILE}";
         elif [ -f ${DEPLOY_DIR_NAME}/${oldSingleComposeFile} ];
         then
           echo "Detected '${oldSingleComposeFile}' compose file (old naming)";
-          COMPOSE_FILE="${oldSingleComposeFile}";
+          composeFile="${oldSingleComposeFile}";
         else
           echo "No compose file specified or detected, using docker-deploy default for COMPOSE_FILE";
         fi;
-        if [ ! -z ${COMPOSE_FILE} ];
+        if [ ! -z ${composeFile} ];
         then
-          echo "Automatically set COMPOSE_FILE to '${COMPOSE_FILE}'";
-          export COMPOSE_FILE="${COMPOSE_FILE}";
+          echo "Automatically set COMPOSE_FILE to '${composeFile}'";
+          export COMPOSE_FILE="${composeFile}";
         fi;
       fi;
   script: deploy
