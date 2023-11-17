@@ -20,9 +20,25 @@ lint-dockerfile:
   variables:
     LINT_IMAGE_NAME: hadolint/hadolint
     LINT_IMAGE_TAG: latest
-    DOCKERFILE_PATH: Dockerfile
+    DOCKERFILE_NAME: Dockerfile
+  before_script:
+    - >
+      if [ -z "${DOCKERFILE_PATH}" ];
+      then
+        export DOCKERFILE_PATH="$(find -name '${DOCKERFILE_NAME}')";
+      fi;
   script:
-    - docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < ${DOCKERFILE_PATH}
+    - >
+      if [ -z "${DOCKERFILE_PATH}" ];
+      then
+        echo "Dockerfile with name '${DOCKERFILE_NAME}' not found in project!";
+        exit 1;
+      elif [ ! f "${DOCKERFILE_PATH}" ];
+      then
+        echo "Dockerfile '${DOCKERFILE_PATH}' is not a valid file!";
+        exit 1;
+      fi;
+      docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < "${DOCKERFILE_PATH}";
   allow_failure: true
   rules:
     - if: $CI_MERGE_REQUEST_ID ||
