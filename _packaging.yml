@@ -25,7 +25,7 @@ lint-dockerfile:
     - >
       if [ -z "${DOCKERFILE_PATH}" ];
       then
-        export DOCKERFILE_PATH="$(find -name '${DOCKERFILE_NAME}')";
+        export DOCKERFILE_PATH=$(find -name "${DOCKERFILE_NAME}");
       fi;
   script:
     - >
