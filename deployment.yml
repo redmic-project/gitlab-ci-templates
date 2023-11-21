@@ -1,51 +1,5 @@
+# Only for backward compatibility, migrate ASAP your project includes to templates included here!
+
 include:
-  - local: '/_deployment.yml'
-
-.deploy-support-branch: &deploy-support-branch
-  rules:
-    - if: $CI_MERGE_REQUEST_ID ||
-          $CI_COMMIT_TAG ||
-          $CI_PIPELINE_SOURCE == "schedule" ||
-          $CI_COMMIT_BRANCH == "master" ||
-          $CI_COMMIT_BRANCH == "main"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      when: manual
-      allow_failure: true
-
-deploy-support-branch-development:
-  extends: .deploy-development
-  <<: *deploy-support-branch
-
-.deploy-stable-branch: &deploy-stable-branch
-  rules:
-    - if: $CI_MERGE_REQUEST_ID ||
-          $CI_COMMIT_TAG ||
-          $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_COMMIT_BRANCH == "master" ||
-          $CI_COMMIT_BRANCH == "main"
-      when: manual
-      allow_failure: true
-
-deploy-stable-branch-development:
-  extends: .deploy-development
-  <<: *deploy-stable-branch
-
-deploy-stable-branch-production:
-  extends: .deploy-production
-  <<: *deploy-stable-branch
-
-.deploy-tag: &deploy-tag
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: manual
-      allow_failure: true
-
-deploy-tag-development:
-  extends: .deploy-development
-  <<: *deploy-tag
-
-deploy-tag-production:
-  extends: .deploy-production
-  <<: *deploy-tag
+  - local: '/deployment-service/docker-deploy.yml'
+  - local: '/deprecation-warning.yml'
