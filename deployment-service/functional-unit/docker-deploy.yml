@@ -1,0 +1,101 @@
+include:
+  - local: '/deployment-service/functional-unit/_docker-deploy.yml'
+
+.deploy-branch-base:
+  variables: &deploy-branch-base-variables
+    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}/${CI_COMMIT_REF_SLUG}
+    DD_IMAGE_TAG: ${CI_COMMIT_SHA}
+
+.deploy-tag-base:
+  variables: &deploy-tag-base-variables
+    DD_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+    DD_IMAGE_TAG: ${CI_COMMIT_TAG}
+
+.deploy-support-branch: &deploy-support-branch
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule" ||
+          $CI_COMMIT_BRANCH == "master" ||
+          $CI_COMMIT_BRANCH == "main"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+      allow_failure: true
+
+deploy-commands-support-branch-development:
+  extends: .deploy-commands-development
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-support-branch
+
+deploy-view-support-branch-development:
+  extends: .deploy-view-development
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-support-branch
+
+.deploy-stable-branch: &deploy-stable-branch
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "master" ||
+          $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+
+deploy-commands-stable-branch-development:
+  extends: .deploy-commands-development
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-stable-branch
+
+deploy-commands-stable-branch-production:
+  extends: .deploy-commands-production
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-stable-branch
+
+deploy-view-stable-branch-development:
+  extends: .deploy-view-development
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-stable-branch
+
+deploy-view-stable-branch-production:
+  extends: .deploy-view-production
+  variables:
+    <<: *deploy-branch-base-variables
+  <<: *deploy-stable-branch
+
+.deploy-tag: &deploy-tag
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+      allow_failure: true
+
+deploy-commands-tag-development:
+  extends: .deploy-commands-development
+  variables:
+    <<: *deploy-tag-base-variables
+  <<: *deploy-tag
+
+deploy-commands-tag-production:
+  extends: .deploy-commands-production
+  variables:
+    <<: *deploy-tag-base-variables
+  <<: *deploy-tag
+
+deploy-view-tag-development:
+  extends: .deploy-view-development
+  variables:
+    <<: *deploy-tag-base-variables
+  <<: *deploy-tag
+
+deploy-view-tag-production:
+  extends: .deploy-view-production
+  variables:
+    <<: *deploy-tag-base-variables
+  <<: *deploy-tag
