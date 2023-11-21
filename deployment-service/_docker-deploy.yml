@@ -7,8 +7,8 @@ include:
   variables:
     DEPLOY_DIR_NAME: deploy
   before_script:
+    - echo "Find Compose files with known names automatically .."
     - >
-      echo "Find Compose files with known names automatically ..";
       if [ -z ${COMPOSE_FILE} ];
       then
         firstNewComposeFile=$(echo "${NEW_COMPOSE_FILE}" | cut -d ':' -f 1);

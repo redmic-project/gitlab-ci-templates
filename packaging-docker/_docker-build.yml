@@ -16,8 +16,8 @@
     NEW_COMPOSE_FILE_NAME: compose.tmpl.yaml:compose.dev.yaml
     OLD_COMPOSE_FILE_NAME: docker-compose.tmpl.yml:docker-compose.dev.yml
   before_script:
+    - echo "Find Compose files with known names at known paths automatically .."
     - >
-      echo "Find Compose files with known names at known paths automatically ..";
       if [ -z ${COMPOSE_FILE_NAME} ];
       then
         for directory in ${COMPOSE_PROJECT_DIRECTORY:-build deploy .};

@@ -19,8 +19,8 @@ lint-dockerfile:
     LINT_IMAGE_TAG: latest
     DOCKERFILE_NAME: Dockerfile
   before_script:
+    - echo "Find Dockerfile in depth automatically by file name .."
     - >
-      echo "Find Dockerfile in depth automatically by file name ..";
       if [ -z "${DOCKERFILE_PATH}" ];
       then
         dockerfilePath=$(find -name "${DOCKERFILE_NAME}");
