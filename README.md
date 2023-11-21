@@ -14,13 +14,51 @@ This compatibility layer will be removed when `v2.0.0` is released. If you need 
 
 ## Templates description
 
-You can use templates available at this project at your own projects, importing them at your `.gitlab-ci.yml` file.
+You can use templates available at this project into your own projects, importing them at your `.gitlab-ci.yml` file.
 
-Each template contains one or more jobs, which you can use *as-is* or customize, overriding values or extending your own jobs from them.
+Each template contains one or more *GitLab CI Jobs*, which you can use *as-is* or customize, overriding values or extending your own jobs from them.
 
-Note that some templates have a base version, prefixed with an underscore (`_`). You can import them if this base version is more convenient to your project.
+Note that some templates have a base definition version, prefixed with an underscore (`_`). You can import them if this definition is more convenient to your project.
 
-### Root level
+## Stages
+
+*GitLab CI Jobs* from these templates run at a specific **stage** of your project *GitLab CI Pipelines*. Check description of each template for more info.
+
+You must reference these stages (ordered as you need) at your project's `.gitlab-ci.yml`, or jobs will not run. Jobs stage value can be overwritten too, is you wish.
+
+Here is a list of all stages used by template jobs by default, with suggested order:
+
+1. `test`
+1. `build` (`build-parent`, `build-lib` and `build-service` for functional-unit).
+1. `deploy` (when referred to package deployment)
+1. `pre-package`
+1. `package`
+1. `post-package`
+1. `deploy` (when referred to service deployment)
+1. `deploy-external-service`
+1. `maintenance`
+
+## Templates usage
+
+Templates are included into `.gitlab-ci.yml` like this:
+
+```yaml
+include:
+  - project: 'redmic-project/gitlab-ci-templates'
+    ref: master
+    file: '/scanning/dependency-scanning.yml'
+
+stages:
+  - test
+
+...
+```
+
+## Templates available
+
+Templates are located at different directories, attending it purpose.
+
+### Files at root level
 
 All templates at root level (except `deprecation-warning.yml`) are deprecated, but linked to current version of templates. Check [Backward compatibility](#backward-compatibility) for further details.
 
