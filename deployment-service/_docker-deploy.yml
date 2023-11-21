@@ -1,15 +1,11 @@
+include:
+  - local: '/deployment-service/_base.yml'
+
 .deploy:
+  extends: .docker-deploy-base
   stage: deploy
-  dependencies: []
-  image: ${DOCKER_DEPLOY_IMAGE_NAME}:${DOCKER_DEPLOY_IMAGE_TAG}
   variables:
-    DOCKER_DEPLOY_IMAGE_NAME: redmic/docker-docker-deploy
-    DOCKER_DEPLOY_IMAGE_TAG: latest
-    STACK: ${CI_PROJECT_NAME}
     DEPLOY_DIR_NAME: deploy
-    REGISTRY_URL: ${CI_REGISTRY}
-    REGISTRY_USER: ${CI_DEPLOY_USER}
-    REGISTRY_PASS: ${CI_DEPLOY_PASSWORD}
   before_script:
     - >
       if [ -z ${COMPOSE_FILE} ];

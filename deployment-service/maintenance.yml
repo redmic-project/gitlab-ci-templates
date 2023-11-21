@@ -1,0 +1,8 @@
+include:
+  - local: '/deployment-service/_maintenance.yml'
+
+scheduled-run-development:
+  extends: .scheduled-run-development
+
+scheduled-run-production:
+  extends: .scheduled-run-production
