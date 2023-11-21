@@ -17,10 +17,11 @@
     OLD_COMPOSE_FILE_NAME: docker-compose.tmpl.yml:docker-compose.dev.yml
   before_script:
     - >
-      for directory in ${COMPOSE_PROJECT_DIRECTORY:-build deploy .};
-      do
-        if [ -z ${COMPOSE_FILE_NAME} ];
-        then
+      # Find Compose files with known names at known paths automatically
+      if [ -z ${COMPOSE_FILE_NAME} ];
+      then
+        for directory in ${COMPOSE_PROJECT_DIRECTORY:-build deploy .};
+        do
           firstNewComposeFile=$(echo "${NEW_COMPOSE_FILE_NAME}" | cut -d ':' -f 1);
           newSingleComposeFile=compose.yaml;
           firstOldComposeFile=$(echo "${OLD_COMPOSE_FILE_NAME}" | cut -d ':' -f 1);
@@ -51,11 +52,13 @@
             export COMPOSE_PROJECT_DIRECTORY="${directory}";
             break;
           fi;
+        done;
+        if [ -z ${COMPOSE_FILE_NAME} ];
+        then
+          echo "No compose file specified or detected, using docker-build default for COMPOSE_FILE_NAME";
         fi;
-      done;
-      if [ -z ${COMPOSE_FILE_NAME} ];
-      then
-        echo "No compose file specified or detected, using docker-build default for COMPOSE_FILE_NAME";
+      else
+        echo "COMPOSE_FILE_NAME is defined, omitting automatic lookup";
       fi;
   script: build
 

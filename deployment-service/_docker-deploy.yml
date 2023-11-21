@@ -8,6 +8,7 @@ include:
     DEPLOY_DIR_NAME: deploy
   before_script:
     - >
+      # Find Compose files with known names automatically
       if [ -z ${COMPOSE_FILE} ];
       then
         firstNewComposeFile=$(echo "${NEW_COMPOSE_FILE}" | cut -d ':' -f 1);
@@ -38,6 +39,8 @@ include:
           echo "Automatically set COMPOSE_FILE to '${composeFile}'";
           export COMPOSE_FILE="${composeFile}";
         fi;
+      else
+        echo "COMPOSE_FILE is defined, omitting automatic lookup";
       fi;
   script: deploy
 
