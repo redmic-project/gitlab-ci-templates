@@ -1,9 +1,10 @@
-# Only for backward compatibility, migrate asap your project include to /scanning/dependency-scanning.yml template!
+# Only for backward compatibility, migrate ASAP your project include to /scanning/dependency-scanning.yml template!
 
 include:
   # The legacy License Compliance analyzer was deprecated in GitLab 15.9 and removed in GitLab 16.3.
   # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/License-Scanning.gitlab-ci.yml
-  template: License-Scanning.gitlab-ci.yml
+  - template: License-Scanning.gitlab-ci.yml
+  - local: '/deprecation-warning.yml'
 
 license_scanning:
   stage: license-list

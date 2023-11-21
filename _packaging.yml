@@ -1,5 +1,6 @@
-# Only for backward compatibility, migrate asap your project includes to templates included here!
+# Only for backward compatibility, migrate ASAP your project includes to templates included here!
 
 include:
   - local: '/packaging-docker/dockerfile-linting.yml'
   - local: '/scanning/container-scanning.yml'
+  - local: '/deprecation-warning.yml'
