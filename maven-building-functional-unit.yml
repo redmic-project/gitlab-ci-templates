@@ -1,51 +1,5 @@
+# Only for backward compatibility, migrate ASAP your project includes to templates included here!
+
 include:
-  - local: '/_maven-building.yml'
-
-.maven-build:
-  variables:
-    LOGGING_LEVEL_ROOT: error
-    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
-    LOGGING_LEVEL_ES_REDMIC: error
-
-maven-build-parent:
-  extends: .maven-build
-  stage: build-parent
-  variables:
-    MAVEN_GOALS: deploy
-  script: mvn -U -B -N clean ${MAVEN_GOALS}
-  after_script:
-  cache:
-  artifacts:
-
-maven-build-lib:
-  extends: .maven-build
-  stage: build-lib
-  variables:
-    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-lib
-    MAVEN_GOALS: deploy
-    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-lib
-    BUILD_OUTPUT_PATH: target
-
-.maven-build-microservice:
-  extends: .maven-build
-  stage: build-service
-  variables:
-    MAVEN_GOALS: verify spring-boot:repackage
-    BUILD_OUTPUT_PATH: dist
-    DOCS_OUTPUT_PATH: target
-  artifacts:
-    paths:
-      - ${PROJECT_ROOT_PATH}/${BUILD_OUTPUT_PATH}/*.jar
-      - ${PROJECT_ROOT_PATH}/${DOCS_OUTPUT_PATH}/generated-docs
-
-maven-build-commands:
-  extends: .maven-build-microservice
-  variables:
-    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-commands
-    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-commands
-
-maven-build-view:
-  extends: .maven-build-microservice
-  variables:
-    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-view
-    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-view
+  - local: '/building/maven/functional-unit.yml'
+  - local: '/deprecation-warning.yml'

@@ -1,0 +1,34 @@
+.maven-build:
+  image: ${MAVEN_IMAGE_NAME}:${MAVEN_IMAGE_TAG}
+  variables:
+    MAVEN_IMAGE_NAME: registry.gitlab.com/redmic-project/docker/maven
+    MAVEN_IMAGE_TAG: latest
+    MAVEN_OPTS: -Dmaven.repo.local=.m2/repository
+    SPRING_PROFILES_ACTIVE: test
+    TEST_OUTPUT_PATH: target
+    TEST_COVERAGE_XPATH: //table[@id='coveragetable']/tfoot//td[@class='ctr2'][1]/text()
+  script:
+    - mvn -pl :${MAVEN_PROJECT_NAME} -U -B clean ${MAVEN_GOALS}
+    - coveragePath="${PROJECT_ROOT_PATH}/${TEST_OUTPUT_PATH}/site/jacoco/index.html"
+    - >
+      if [ -f "${coveragePath}" ];
+      then
+        coverage=$(xmllint --html --xpath "${TEST_COVERAGE_XPATH}" "${coveragePath}");
+        echo "Coverage - ${coverage}";
+      fi
+  coverage: '/^Coverage\s-\s(\d+(?:\.\d+)?%)/'
+  after_script:
+    - rm -rf .m2/repository/es
+  cache:
+    paths:
+      - .m2/repository/
+  artifacts:
+    name: '${MAVEN_PROJECT_NAME}-${CI_COMMIT_REF_NAME}'
+    expire_in: '6 months'
+    paths:
+      - ${PROJECT_ROOT_PATH}/${BUILD_OUTPUT_PATH}/*.jar
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH || $CI_COMMIT_TAG
