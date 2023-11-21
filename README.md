@@ -2,7 +2,7 @@
 
 Collection of CI/CD templates used and extended by REDMIC platform projects
 
-## <a name="backward-compatibility"></a>Backward compatibility
+## Backward compatibility
 
 Until [`v1.6.0`](https://gitlab.com/redmic-project/gitlab-ci-templates/-/releases/v1.6.0), templates were defined at project root. Now they are grouped into subdirectories, but there is a compatibility template in place for each one.
 
