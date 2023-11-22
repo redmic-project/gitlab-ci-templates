@@ -1,0 +1,8 @@
+.dind-env:
+  variables:
+    DIND_IMAGE_NAME: docker
+    DIND_IMAGE_TAG: dind
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  services:
+    - ${DIND_IMAGE_NAME}:${DIND_IMAGE_TAG}

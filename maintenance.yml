@@ -1,8 +1,5 @@
+# Only for backward compatibility, migrate ASAP your project includes to templates included here!
+
 include:
-  - local: '/_maintenance.yml'
-
-scheduled-run-development:
-  extends: .scheduled-run-development
-
-scheduled-run-production:
-  extends: .scheduled-run-production
+  - local: '/deployment-service/maintenance.yml'
+  - local: '/deprecation-warning.yml'

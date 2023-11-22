@@ -1,0 +1,6 @@
+variables:
+  TEMPLATE_DEPRECATION_MESSAGE: You are including a deprecated CI template from 'redmic-project/gitlab-ci-templates', migrate to current version ASAP!
+
+default:
+  before_script: echo "${TEMPLATE_DEPRECATION_MESSAGE}"
+  after_script: echo "${TEMPLATE_DEPRECATION_MESSAGE}"

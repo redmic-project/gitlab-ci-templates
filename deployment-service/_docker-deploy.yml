@@ -1,0 +1,71 @@
+include:
+  - local: '/deployment-service/_base.yml'
+
+.deploy:
+  extends: .docker-deploy-base
+  stage: deploy
+  variables:
+    DEPLOY_DIR_NAME: deploy
+  before_script:
+    - echo "Find Compose files with known names automatically .."
+    - >
+      if [ -z ${COMPOSE_FILE} ];
+      then
+        firstNewComposeFile=$(echo "${NEW_COMPOSE_FILE}" | cut -d ':' -f 1);
+        newSingleComposeFile=compose.yaml;
+        firstOldComposeFile=$(echo "${OLD_COMPOSE_FILE}" | cut -d ':' -f 1);
+        oldSingleComposeFile=docker-compose.yml;
+        if [ -f ${DEPLOY_DIR_NAME}/${firstNewComposeFile} ];
+        then
+          echo "Detected '${firstNewComposeFile}' compose file, nice!";
+          composeFile="${NEW_COMPOSE_FILE}";
+        elif [ -f ${DEPLOY_DIR_NAME}/${newSingleComposeFile} ];
+        then
+          echo "Detected '${newSingleComposeFile}' compose file, nice!";
+          composeFile="${newSingleComposeFile}";
+        elif [ -f ${DEPLOY_DIR_NAME}/${firstOldComposeFile} ];
+        then
+          echo "Detected '${firstOldComposeFile}' compose file (old naming)";
+          composeFile="${OLD_COMPOSE_FILE}";
+        elif [ -f ${DEPLOY_DIR_NAME}/${oldSingleComposeFile} ];
+        then
+          echo "Detected '${oldSingleComposeFile}' compose file (old naming)";
+          composeFile="${oldSingleComposeFile}";
+        else
+          echo "No compose file specified or detected, using docker-deploy default for COMPOSE_FILE";
+        fi;
+        if [ ! -z ${composeFile} ];
+        then
+          echo "Automatically set COMPOSE_FILE to '${composeFile}'";
+          export COMPOSE_FILE="${composeFile}";
+        fi;
+      else
+        echo "COMPOSE_FILE is defined, omitting automatic lookup";
+      fi;
+  script: deploy
+
+.deploy-development:
+  extends: .deploy
+  variables:
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+    SSH_PORT: ${DEV_SSH_PORT}
+    DEPLOY_KEY: ${DEV_DEPLOY_KEY}
+    NEW_COMPOSE_FILE: compose.tmpl.yaml:compose.dev.yaml
+    OLD_COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
+    PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
+    DD_PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
+  environment:
+    name: dev
+
+.deploy-production:
+  extends: .deploy
+  variables:
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
+    SSH_PORT: ${PRO_SSH_PORT}
+    DEPLOY_KEY: ${PRO_DEPLOY_KEY}
+    NEW_COMPOSE_FILE: compose.tmpl.yaml:compose.prod.yaml
+    OLD_COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
+    PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
+    DD_PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
+  environment:
+    name: pro

@@ -1,0 +1,32 @@
+include:
+  - local: '/deployment-service/_base.yml'
+
+.scheduled-run:
+  extends: .docker-deploy-base
+  stage: maintenance
+  needs: []
+  variables:
+    SERVICE: ${CI_PROJECT_NAME}_${CI_PROJECT_NAME}
+  script: relaunch
+
+.scheduled-run-development:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${DEV_SSH_REMOTE}
+    SSH_PORT: ${DEV_SSH_PORT}
+    DEPLOY_KEY: ${DEV_DEPLOY_KEY}
+  rules:
+    - if: $DEVELOPMENT_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+.scheduled-run-production:
+  extends: .scheduled-run
+  variables:
+    SSH_REMOTE: ${PRO_SSH_REMOTE}
+    SSH_PORT: ${PRO_SSH_PORT}
+    DEPLOY_KEY: ${PRO_DEPLOY_KEY}
+  rules:
+    - if: $PRODUCTION_MAINTENANCE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"

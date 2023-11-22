@@ -1,0 +1,40 @@
+include:
+  - local: '/packaging-docker/_base.yml'
+
+lint-dockerfile:
+  extends: .dind-env
+  image: ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+  stage: pre-package
+  dependencies: []
+  variables:
+    DOCKER_IMAGE_NAME: docker
+    DOCKER_IMAGE_TAG: latest
+    LINT_IMAGE_NAME: hadolint/hadolint
+    LINT_IMAGE_TAG: latest
+    DOCKERFILE_NAME: Dockerfile
+  before_script:
+    - echo "Find Dockerfile in depth automatically by file name .."
+    - >
+      if [ -z "${DOCKERFILE_PATH}" ];
+      then
+        dockerfilePath=$(find -name "${DOCKERFILE_NAME}");
+        if [ -f "${dockerfilePath}" ];
+        then
+          echo "Detected '${dockerfilePath}' Dockerfile, nice!";
+          export DOCKERFILE_PATH="${dockerfilePath}";
+        else
+          echo "DOCKERFILE_PATH is undefined and Dockerfile with name '${DOCKERFILE_NAME}' not found in project!";
+          exit 1;
+        fi;
+      else
+        echo "DOCKERFILE_PATH is defined, omitting automatic lookup";
+      fi;
+  script:
+    - docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < "${DOCKERFILE_PATH}";
+  allow_failure: true
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
