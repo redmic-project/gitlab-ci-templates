@@ -1,4 +1,8 @@
+include:
+  - local: '/packaging-docker/_base.yml'
+
 .docker-operations:
+  extends: .dind-env
   image: ${DOCKER_BUILD_IMAGE_NAME}:${DOCKER_BUILD_IMAGE_TAG}
   variables:
     DOCKER_BUILD_IMAGE_NAME: pedroetb/docker-build
