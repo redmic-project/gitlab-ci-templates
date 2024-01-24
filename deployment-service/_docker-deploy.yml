@@ -54,6 +54,10 @@ include:
     OLD_COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.dev.yml
     PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
     DD_PUBLIC_HOSTNAME: ${DEV_PUBLIC_HOSTNAME}
+    VOL_ADDR: ${DEV_VOL_ADDR}
+    DD_VOL_ADDR: ${DEV_VOL_ADDR}
+    VOL_DEVICE_PREFIX: ${DEV_VOL_DEVICE_PREFIX}
+    DD_VOL_DEVICE_PREFIX: ${DEV_VOL_DEVICE_PREFIX}
   environment:
     name: dev
 
@@ -67,5 +71,9 @@ include:
     OLD_COMPOSE_FILE: docker-compose.tmpl.yml:docker-compose.prod.yml
     PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
     DD_PUBLIC_HOSTNAME: ${PRO_PUBLIC_HOSTNAME}
+    VOL_ADDR: ${PRO_VOL_ADDR}
+    DD_VOL_ADDR: ${PRO_VOL_ADDR}
+    VOL_DEVICE_PREFIX: ${PRO_VOL_DEVICE_PREFIX}
+    DD_VOL_DEVICE_PREFIX: ${PRO_VOL_DEVICE_PREFIX}
   environment:
     name: pro
