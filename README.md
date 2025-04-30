@@ -64,13 +64,21 @@ All templates at root level (except `deprecation-warning.yml`) are deprecated, b
 
 ### Building
 
-#### Maven
+#### Maven [legacy]
 
 Build an application with Maven, using [`redmic-project/docker/maven`](https://gitlab.com/redmic-project/docker/maven).
 
 * **functional-unit.yml**: Build a functional-unit project. Include 3 stages: `build-parent`, `build-lib` and `build-service`.
 * **library.yml**: Build a library project. Run at `build` stage.
 * **microservice.yml**: Build a microservice project. Run at `build` stage.
+
+#### MVNW
+
+Build an application with Maven Wrapper (**MVNW**), using [`redmic-project/docker/maven`](https://gitlab.com/redmic-project/docker/maven).
+
+Requires using `maven >= v3.9.0` and using a project with `mvnw` available.
+
+* **building.yml**: Build a microservice project. Run at `build` stage.
 
 ### Deployment external service
 
