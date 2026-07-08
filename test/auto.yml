@@ -1,0 +1,12 @@
+# Auto scanning template.
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * code_quality: CODE_QUALITY_DISABLED
+# * sast: SAST_DISABLED
+# * secret_detection: SECRET_DETECTION_DISABLED
+# * dependency_scanning: DEPENDENCY_SCANNING_DISABLED
+include:
+  - local: '/test/code-quality.yml'
+  - local: '/test/sast.yml'
+  - local: '/test/secret-detection.yml'
+  - local: '/test/dependency-scanning.yml'

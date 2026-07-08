@@ -1,0 +1,21 @@
+include:
+  - local: '/build/docker/dockerfile-linting.yml'
+  - local: '/build/docker/_docker-build.yml'
+  - local: '/test/container-scanning.yml'
+
+📦 docker-build-branch:
+  extends:
+    - .docker-build
+    - .docker-branch
+  variables:
+    PACKAGED_IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
+    LATEST_TAG_VALUE: ${CI_COMMIT_REF_SLUG}
+    VERSION: ${CI_COMMIT_SHORT_SHA}
+
+🎁 docker-build-tag:
+  extends:
+    - .docker-build
+    - .docker-tag
+  variables:
+    PACKAGED_IMAGE_TAG: ${CI_COMMIT_TAG}
+    VERSION: ${CI_COMMIT_TAG}

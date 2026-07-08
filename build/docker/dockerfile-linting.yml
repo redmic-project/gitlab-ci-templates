@@ -1,0 +1,7 @@
+include:
+  - local: '/build/docker/_dockerfile-linting.yml'
+
+🐳 lint-dockerfile:
+  extends:
+    - .lint-dockerfile
+    - .docker-branch

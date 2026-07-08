@@ -2,15 +2,7 @@
 
 Collection of CI/CD templates used and extended by REDMIC platform projects
 
-## Backward compatibility
-
-Until [`v1.6.0`](https://gitlab.com/redmic-project/gitlab-ci-templates/-/releases/v1.6.0), templates were defined at project root. Now they are grouped into subdirectories, but there is a compatibility template in place for each one.
-
-These compatibility templates only import current version of templates, adding some warnings about using deprecated version of templates.
-
-Legacy projects using these deprecated templates should continue working ok, but is recommended to migrate template imports to updated versions.
-
-This compatibility layer will be removed when `v2.0.0` is released. If you need to use old templates after this breaking change is done, fix your templates include to a previous version.
+[TOC]
 
 ## Templates description
 
@@ -24,19 +16,15 @@ Note that some templates have a base definition version, prefixed with an unders
 
 *GitLab CI Jobs* from these templates run at a specific **stage** of your project *GitLab CI Pipelines*. Check description of each template for more info.
 
-You must reference these stages (ordered as you need) at your project's `.gitlab-ci.yml`, or jobs will not run. Jobs stage value can be overwritten too, is you wish.
+All jobs contained at these templates are prepared to run at any of [GitLab CI default pipeline stages](https://docs.gitlab.com/ci/yaml/#stages):
 
-Here is a list of all stages used by template jobs by default, with suggested order:
-
+1. `.pre`
+1. `build`
 1. `test`
-1. `build` (`build-parent`, `build-lib` and `build-service` for functional-unit).
-1. `deploy` (when referred to package deployment)
-1. `pre-package`
-1. `package`
-1. `post-package`
-1. `deploy` (when referred to service deployment)
-1. `deploy-external-service`
-1. `maintenance`
+1. `deploy`
+1. `.post`
+
+If your project needs different stages or stage reordering, you may define these stages (honoring default stages, ordered as you need) at your project's `.gitlab-ci.yml`, or jobs at your custom stages will not run. Jobs stage value can be overwritten too.
 
 ## Templates usage
 
@@ -45,74 +33,145 @@ Templates are included into `.gitlab-ci.yml` like this:
 ```yaml
 include:
   - project: 'redmic-project/gitlab-ci-templates'
-    ref: master
-    file: '/scanning/dependency-scanning.yml'
-
-stages:
-  - test
+    ref: main
+    file: '/test/auto.yml'
 
 ...
 ```
 
-## Templates available
+## Available templates
 
-Templates are located at different directories, attending it purpose.
+Templates are located at different directories, attending their stage and purpose.
 
-### Files at root level
+### Build
 
-All templates at root level (except `deprecation-warning.yml`) are deprecated, but linked to current version of templates. Check [Backward compatibility](#backward-compatibility) for further details.
+Template files located into `build/` directory defines jobs which run at `build` stage.
 
-### Building
-
-#### Maven [legacy]
+#### Maven
 
 Build an application with Maven, using [`redmic-project/docker/maven`](https://gitlab.com/redmic-project/docker/maven).
 
-* **functional-unit.yml**: Build a functional-unit project. Include 3 stages: `build-parent`, `build-lib` and `build-service`.
-* **library.yml**: Build a library project. Run at `build` stage.
-* **microservice.yml**: Build a microservice project. Run at `build` stage.
+* **build/maven/mvnw.yml**: Build a project using Maven Wrapper (**MVNW**). Requires using `maven >= v3.9.0` and using a project with `mvnw` available.
+* *[legacy]* **build/maven/library.yml**: Build a library project.
+* *[legacy]* **build/maven/microservice.yml**: Build a microservice project.
+* *[legacy]* **build/maven/functional-unit.yml**: Build a functional unit project.
 
-#### MVNW
+#### Docker
 
-Build an application with Maven Wrapper (**MVNW**), using [`redmic-project/docker/maven`](https://gitlab.com/redmic-project/docker/maven).
+Only for projects with Docker image definitions. Include Docker image building, tagging and pushing (and other container-related jobs).
 
-Requires using `maven >= v3.9.0` and using a project with `mvnw` available.
+* **build/docker/docker-build.yml**: Build a Docker image defined at your project, using [`pedroetb-projects/docker-build`](https://gitlab.com/pedroetb-projects/docker-build). Imports jobs from `build/docker/dockerfile-linting.yml` and `test/container-scanning.yml` too, so includes jobs at 2 different stages: `build` and `test`.
+* **build/docker/dockerfile-linting.yml**: Run syntax checks over Dockerfile at your project. Already included at `build/docker/docker-build.yml`.
 
-* **building.yml**: Build a microservice project. Run at `build` stage.
+### Test
 
-### Deployment external service
+Template files located into `test/` directory defines jobs which run at `test` stage.
 
-Deploy ancillary services (predefined externally) to your main service.
+Perform some scanning jobs over project resources. All these jobs inherit from [GitLab CI templates](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates), adding specific configuration details.
 
-* **backup-files.yml**: Deploy a files backup service. Defined at [`redmic-project/maintenance/backup-files`](https://gitlab.com/redmic-project/maintenance/backup-files). Run at `deploy-external-service` stage.
-* **backup-postgresql.yml**: Deploy a PostgreSQL database backup service. Defined at [`redmic-project/postgres/backup-postgresql`](https://gitlab.com/redmic-project/postgres/backup-postgresql). Run at `deploy-external-service` stage.
+* **test/auto.yml**: Include recommended scanning jobs.
+* **test/code-quality.yml**: Identifies maintainability issues before they become technical debt.
+* **test/sast.yml**: Static application security testing (SAST) discovers vulnerabilities in your source code before they reach production.
+* **test/secret-detection.yml**: Minimize the risk of exposing your secrets.
+* **test/dependency-scanning.yml**: Identify security vulnerabilities in your application's dependencies.
+* **test/container-scanning.yml**: Run vulnerability checks over your Docker image. Already included at `build/docker/docker-build.yml`, but not by `test/auto.yml`.
 
-### Deployment package
+### Deploy
 
-* **npm-deployment.yml**: Upload an already built NPM package to *GitLab packages* of your project. Run at `deploy` stage. Inherit from [GitLab CI templates](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates).
+Template files located into `deploy/` directory defines jobs which run at `deploy` stage.
 
-### Deployment service
+#### Package deployment
+
+* **deploy/package/npm.yml**: Upload an already built NPM package to *GitLab packages* of your project. Inherit from [GitLab CI templates](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates).
+
+#### Service deployment
 
 Deploy a service (based in Docker) in a remote environment, using [`redmic-project/docker/docker-deploy`](https://gitlab.com/redmic-project/docker/docker-deploy).
 
-* **custom-image.yml**: Adapt jobs from `deployment-service/docker-deploy.yml` to use a custom Docker image, defined at your project and uploaded to *GitLab Docker registry* of your project.
+* **deploy/service/docker-deploy.yml**: Deploy one or more services defined at your project (using compose files and related contents) to a remote environment. Usage of custom Docker images is supported when they are pulled from your project's *GitLab Docker registry*.
+* **deploy/service/fu-docker-deploy.yml**: Same as `deploy/service/docker-deploy.yml`, but preconfigured to deploy services defined into a functional unit.
 
-* **docker-deploy.yml**: Deploy one or more services defined at your project (using compose files and related contents) to a remote environment of your choice. Run at `deploy` stage. Support multiple environments (like `dev` and `pro`).
+#### E2E
 
-* **maintenance.yml**: Relaunch already deployed services, in order to do maintenance tasks. You must trigger these jobs using *GitLab pipeline schedules*. Run at `maintenance` stage. Support multiple environments (like `dev` and `pro`).
+Perform some testing jobs over services deployments.
 
-#### Functional unit
+* **deploy/e2e/playwright.yml**: Run E2E (end to end) tests defined at your project with [Playwright](https://playwright.dev/). Include different jobs for branch, tag and schedule pipelines.
+* **deploy/e2e/playwright-parallel.yml**: Same as `deploy/e2e/playwright.yml`, but running in parallel jobs (`2` by default, you can increase it overwritting `parallel` property). Use sharding to split tests between available parallel jobs.
 
-* **docker-deploy.yml**: Same as `deployment-service/docker-deploy.yml`, but preconfigured to deploy services defined into a functional-unit, using always custom images (like `deployment-service/custom-image.yml` does). Run at `deploy` stage.
+#### DAST (Dynamic Application Security Testing)
 
-### Packaging Docker
+Run DAST scans against deployed services using [OWASP ZAP](https://www.zaproxy.org/) with the [Automation Framework](https://www.zaproxy.org/docs/automate/automation-framework/).
 
-Only for projects with Docker image definitions. Include Docker image building, tagging and pushing, and also Dockerfile linting and Docker image scanning.
+* **deploy/dast/zap.yml**: Run OWASP ZAP scans against a deployed application.
 
-* **docker-build.yml**: Build a Docker image defined at your project, using [`pedroetb-projects/docker-build`](https://gitlab.com/pedroetb-projects/docker-build). Imports jobs from `packaging-docker/dockerfile-linting.yml` and `scanning/container-scanning.yml` too. Include 3 stages: `pre-package`, `package` and `post-package`.
-* **dockerfile-linting.yml**: Run syntax checks over Dockerfile at your project. Run at `pre-package` stage. Already included at `packaging-docker/docker-build.yml`.
+Each project can provide its own ZAP Automation Framework configuration at `.zap/zap.yaml` in the project root. If this file is not present, a default baseline scan (spider + passive scan) is used automatically.
 
-### Scanning
+**Variables:**
 
-* **container-scanning.yml**: Run vulnerability checks over your Docker image. Run at `post-package` stage. Already included at `packaging-docker/docker-build.yml`. Inherit from [GitLab CI templates](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates).
-* **dependency-scanning.yml**: Lookup dependencies at your code, finding vulnerabilities and licenses compliance status. Run at `test` stage. Inherit from [GitLab CI templates](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates).
+| Variable | Description | Default |
+| --- | --- | --- |
+| `DAST_TARGET_URL` | URL of the deployed application to scan (required) | *(empty)* |
+| `ZAP_CONFIG_FILE` | Path to the project ZAP config file | `.zap/zap.yaml` |
+
+**Reference configuration:**
+
+A reference default ZAP config is available below, which can be used as a starting point for custom project configurations.
+
+``` yaml
+env:
+  contexts:
+    - name: "Default Context"
+      urls:
+        - "${DAST_TARGET_URL}"
+      includePaths:
+        - "${DAST_TARGET_URL}.*"
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: spider
+    parameters:
+      context: "Default Context"
+      maxDuration: 5
+      maxDepth: 5
+      maxChildren: 10
+
+  - type: spiderAjax
+    parameters:
+      context: "Default Context"
+      maxDuration: 5
+      maxCrawlDepth: 5
+      numberOfBrowsers: 2
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 10
+
+  - type: report
+    parameters:
+      template: "traditional-html-plus"
+      reportDir: "${CI_PROJECT_DIR}/zap-reports"
+      reportFile: "zap-report"
+      reportTitle: "ZAP DAST Report"
+      reportDescription: "Automated DAST scan report generated by OWASP ZAP"
+    risks:
+      - high
+      - medium
+      - low
+      - info
+
+  - type: report
+    parameters:
+      template: "traditional-json-plus"
+      reportDir: "${CI_PROJECT_DIR}/zap-reports"
+      reportFile: "zap-report"
+      reportTitle: "ZAP DAST Report"
+      reportDescription: "Automated DAST scan report generated by OWASP ZAP"
+    risks:
+      - high
+      - medium
+      - low
+      - info
+```

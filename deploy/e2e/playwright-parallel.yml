@@ -1,0 +1,17 @@
+include:
+  - local: '/deploy/e2e/_playwright.yml'
+
+🎭 e2e-playwright-branch-parallel:
+  extends:
+    - .e2e-playwright-parallel
+    - .e2e-branch
+
+🎭 e2e-playwright-tag-parallel:
+  extends:
+    - .e2e-playwright-parallel
+    - .e2e-tag
+
+🎭 e2e-playwright-schedule-parallel:
+  extends:
+    - .e2e-playwright-parallel
+    - .e2e-schedule

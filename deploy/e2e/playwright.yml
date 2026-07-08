@@ -1,0 +1,17 @@
+include:
+  - local: '/deploy/e2e/_playwright.yml'
+
+🎭 e2e-playwright-branch:
+  extends:
+    - .e2e-playwright
+    - .e2e-branch
+
+🎭 e2e-playwright-tag:
+  extends:
+    - .e2e-playwright
+    - .e2e-tag
+
+🎭 e2e-playwright-schedule:
+  extends:
+    - .e2e-playwright
+    - .e2e-schedule

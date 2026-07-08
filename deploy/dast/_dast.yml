@@ -1,0 +1,26 @@
+.dast:
+  stage: deploy
+  dependencies: []
+  allow_failure: true
+
+# Common configuration in relation to the repository events that trigger DAST jobs.
+
+.dast-branch:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+
+.dast-tag:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+.dast-schedule:
+  rules:
+    - if: $DAST_SCHEDULE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"

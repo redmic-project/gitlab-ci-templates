@@ -1,0 +1,21 @@
+include:
+  - local: '/deploy/service/_docker-deploy.yml'
+
+🤞 deploy-branch-dev:
+  extends:
+    - .docker-deploy
+    - .deploy-development
+    - .deploy-branch
+
+👍 deploy-tag-dev:
+  extends:
+    - .docker-deploy
+    - .deploy-development
+    - .deploy-tag
+
+🚀 deploy-tag-pro:
+  extends:
+    - .docker-deploy
+    - .deploy-production
+    - .deploy-tag
+    - .deploy-production-confirmation

@@ -1,0 +1,36 @@
+include:
+  - local: '/deploy/e2e/_e2e.yml'
+
+.e2e-playwright:
+  extends: .e2e
+  image: ${PLAYWRIGHT_IMAGE_NAME}:${PLAYWRIGHT_IMAGE_TAG}
+  variables:
+    PLAYWRIGHT_IMAGE_NAME: mcr.microsoft.com/playwright
+    PLAYWRIGHT_IMAGE_TAG: latest
+    E2E_OUTPUT_DIR: test-results
+    E2E_REPORT_DIR: playwright-report
+    E2E_BASE_URL: http://localhost:3000
+    E2E_GLOBAL_TIMEOUT: 3300000
+  before_script:
+    - cd ${E2E_MAIN_DIR}
+    - npm install
+  script:
+    - npx playwright test ${PARALLEL_OPTIONS} --global-timeout ${E2E_GLOBAL_TIMEOUT} ${E2E_OPTIONS}
+  artifacts:
+    name: ${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}
+    expire_in: 1 month
+    when: always
+    paths:
+      - ${E2E_MAIN_DIR}/${E2E_OUTPUT_DIR}/
+      - ${E2E_MAIN_DIR}/${E2E_REPORT_DIR}/
+  cache:
+    key: e2e-playwright
+    when: always
+    paths:
+      - ${E2E_MAIN_DIR}/node_modules/
+
+.e2e-playwright-parallel:
+  extends: .e2e-playwright
+  variables:
+    PARALLEL_OPTIONS: --shard=${CI_NODE_INDEX}/${CI_NODE_TOTAL}
+  parallel: 2

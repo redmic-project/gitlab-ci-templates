@@ -1,0 +1,53 @@
+include:
+  - local: '/build/maven/_maven.yml'
+
+.maven-build:
+  variables:
+    LOGGING_LEVEL_ROOT: error
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK: error
+    LOGGING_LEVEL_ES_REDMIC: error
+
+⚒️ maven-build-fu-parent:
+  extends: .maven-build
+  variables:
+    MAVEN_GOALS: deploy
+  script: mvn -U -B -N clean ${MAVEN_GOALS}
+  after_script:
+  cache:
+  artifacts:
+
+⚒️ maven-build-fu-lib:
+  extends: .maven-build
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-lib
+    MAVEN_GOALS: deploy
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-lib
+    BUILD_OUTPUT_PATH: target
+  needs:
+    - job: ⚒️ maven-build-fu-parent
+      artifacts: false
+
+.maven-build-fu-microservice:
+  extends: .maven-build
+  variables:
+    MAVEN_GOALS: verify spring-boot:repackage
+    BUILD_OUTPUT_PATH: dist
+    DOCS_OUTPUT_PATH: target
+  artifacts:
+    paths:
+      - ${PROJECT_ROOT_PATH}/${BUILD_OUTPUT_PATH}/*.jar
+      - ${PROJECT_ROOT_PATH}/${DOCS_OUTPUT_PATH}/generated-docs
+  needs:
+    - job: ⚒️ maven-build-fu-lib
+
+⚒️ maven-build-fu-commands:
+  extends: .maven-build-fu-microservice
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-commands
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-commands
+
+⚒️ maven-build-fu-view:
+  extends: .maven-build-fu-microservice
+  variables:
+    MAVEN_PROJECT_NAME: ${CI_PROJECT_NAME}-view
+    PROJECT_ROOT_PATH: ${CI_PROJECT_NAME}-view

@@ -1,0 +1,36 @@
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * container_scanning: CONTAINER_SCANNING_DISABLED
+include:
+  # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
+
+container_scanning:
+  variables:
+    GIT_STRATEGY: fetch
+    DOCKERFILE_NAME: Dockerfile
+    CI_APPLICATION_REPOSITORY: ${CI_REGISTRY_IMAGE}
+  before_script:
+    - echo "Find Dockerfile in depth automatically by file name .."
+    - >
+      if [ ! -z "${CS_DOCKERFILE_PATH}" ] && [ -f "${CS_DOCKERFILE_PATH}" ];
+      then
+        echo "CS_DOCKERFILE_PATH is defined and file exists, omitting automatic lookup";
+      else
+        dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
+        if [ -f "${dockerfilePath}" ];
+        then
+          echo "Detected '${dockerfilePath}' Dockerfile, nice!";
+          export CS_DOCKERFILE_PATH="${dockerfilePath}";
+        else
+          echo "CS_DOCKERFILE_PATH is undefined and Dockerfile with name '${DOCKERFILE_NAME}' not found in project!";
+        fi;
+      fi;
+    - >
+      if [ -z "${CI_COMMIT_TAG}" ];
+      then
+        export CI_APPLICATION_TAG="${CI_COMMIT_SHORT_SHA}";
+      else
+        export CI_APPLICATION_TAG="${CI_COMMIT_TAG}";
+      fi;
+  when: manual

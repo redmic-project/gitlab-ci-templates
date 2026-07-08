@@ -1,5 +1,0 @@
-# Only for backward compatibility, migrate ASAP your project includes to templates included here!
-
-include:
-  - local: '/building/maven/functional-unit.yml'
-  - local: '/deprecation-warning.yml'

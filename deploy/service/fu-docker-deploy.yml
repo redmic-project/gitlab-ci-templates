@@ -1,0 +1,40 @@
+include:
+  - local: '/deploy/service/_fu-docker-deploy.yml'
+
+🤞 deploy-fu-commands-branch-dev:
+  extends:
+    - .docker-deploy-fu-commands
+    - .deploy-development
+    - .deploy-branch
+
+🤞 deploy-fu-view-branch-dev:
+  extends:
+    - .docker-deploy-fu-view
+    - .deploy-development
+    - .deploy-branch
+
+👍 deploy-fu-commands-tag-dev:
+  extends:
+    - .docker-deploy-fu-commands
+    - .deploy-development
+    - .deploy-tag
+
+👍 deploy-fu-view-tag-dev:
+  extends:
+    - .docker-deploy-fu-view
+    - .deploy-development
+    - .deploy-tag
+
+🚀 deploy-fu-commands-tag-pro:
+  extends:
+    - .docker-deploy-fu-commands
+    - .deploy-production
+    - .deploy-tag
+    - .deploy-production-confirmation
+
+🚀 deploy-fu-view-tag-pro:
+  extends:
+    - .docker-deploy-fu-view
+    - .deploy-production
+    - .deploy-tag
+    - .deploy-production-confirmation

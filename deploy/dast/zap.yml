@@ -1,0 +1,17 @@
+include:
+  - local: '/deploy/dast/_zap.yml'
+
+🛡 dast-zap-branch:
+  extends:
+    - .dast-zap
+    - .dast-branch
+
+🛡 dast-zap-tag:
+  extends:
+    - .dast-zap
+    - .dast-tag
+
+🛡 dast-zap-schedule:
+  extends:
+    - .dast-zap
+    - .dast-schedule

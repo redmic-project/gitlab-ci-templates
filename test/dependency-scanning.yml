@@ -1,0 +1,9 @@
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * dependency_scanning: DEPENDENCY_SCANNING_DISABLED
+include:
+  # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+dependency_scanning:
+  when: manual

@@ -1,0 +1,9 @@
+include:
+  - local: '/build/maven/_maven.yml'
+
+⚒️ maven-build:
+  extends: .maven-build
+  variables:
+    MAVEN_GOALS: verify spring-boot:repackage
+    PROJECT_ROOT_PATH: '.'
+    BUILD_OUTPUT_PATH: dist

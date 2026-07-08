@@ -1,0 +1,7 @@
+include:
+  - local: '/build/maven/_mvnw.yml'
+
+⚒️ mvnw-build:
+  extends: .mvnw-build
+  variables:
+    MAVEN_GOALS: clean verify spring-boot:repackage

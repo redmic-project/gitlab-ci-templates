@@ -1,0 +1,28 @@
+.e2e:
+  stage: deploy
+  dependencies: []
+  needs: []
+  variables:
+    E2E_MAIN_DIR: e2e
+
+# Common configuration in relation to the repository events that trigger E2E jobs.
+
+.e2e-branch:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+
+.e2e-tag:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: manual
+
+.e2e-schedule:
+  rules:
+    - if: $E2E_SCHEDULE_DISABLED
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"

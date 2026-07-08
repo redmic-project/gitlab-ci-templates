@@ -1,0 +1,29 @@
+.deploy:
+  stage: deploy
+  dependencies: []
+  allow_failure: true
+  variables:
+    DEPLOY_ENVIRONMENT_NAME: default
+  environment:
+    name: ${DEPLOY_ENVIRONMENT_NAME}
+    url: ${DEPLOY_ENVIRONMENT_URL}
+
+.deploy-production-confirmation:
+  manual_confirmation: "🌵 ¿Seguro que quieres desplegar a producción?"
+
+# Common configuration in relation to the repository events that trigger service deployment jobs.
+
+.deploy-branch:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID ||
+          $CI_COMMIT_TAG ||
+          $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+
+.deploy-tag:
+  rules:
+    - if: $CI_COMMIT_TAG &&
+          $CI_COMMIT_TAG =~ /^v?\d+\.\d+\.\d+.*/i
+      when: manual

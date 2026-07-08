@@ -1,0 +1,27 @@
+include:
+  - local: '/deploy/service/_docker-deploy.yml'
+
+.docker-deploy:
+  variables:
+    PROJECT_PARENT_NAME: functional-unit
+    STACK: ${PROJECT_PARENT_NAME}
+
+.docker-deploy-fu-commands:
+  extends: .docker-deploy
+  variables:
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: commands
+    STATUS_CHECK_DELAY: 300
+
+.docker-deploy-fu-view:
+  extends: .docker-deploy
+  variables:
+    FUNCTIONAL_UNIT_MICROSERVICE_NAME: view
+    STATUS_CHECK_DELAY: 180
+
+.deploy-development:
+  variables:
+    DEPLOY_ENVIRONMENT_NAME: dev/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}
+
+.deploy-production:
+  variables:
+    DEPLOY_ENVIRONMENT_NAME: pro/${FUNCTIONAL_UNIT_MICROSERVICE_NAME}

@@ -1,0 +1,9 @@
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * code_quality: CODE_QUALITY_DISABLED
+include:
+  # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Code-Quality.gitlab-ci.yml
+  - template: Jobs/Code-Quality.gitlab-ci.yml
+
+code_quality:
+  when: manual

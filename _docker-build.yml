@@ -1,5 +1,0 @@
-# Only for backward compatibility, migrate ASAP your project includes to templates included here!
-
-include:
-  - local: '/packaging-docker/_docker-build.yml'
-  - local: '/deprecation-warning.yml'

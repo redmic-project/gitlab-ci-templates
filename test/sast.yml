@@ -1,0 +1,9 @@
+# Test jobs may be disabled by setting environment variables:
+# * test: TEST_DISABLED
+# * sast: SAST_DISABLED
+include:
+  # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/SAST.gitlab-ci.yml
+
+sast:
+  when: manual
