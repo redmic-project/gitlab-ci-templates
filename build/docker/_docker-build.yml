@@ -73,7 +73,7 @@ include:
   variables:
     TARGET_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
   before_script:
-    - export TARGET_IMAGE="${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}"
+    - export TARGET_IMAGE=${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}
 
 .docker-build-tag-dockerhub:
   extends: .docker-build-tag
@@ -85,4 +85,4 @@ include:
     TARGET_REGISTRY_PASS: ${DOCKER_HUB_PASS}
   before_script:
     - flatten
-    - export TARGET_IMAGE="$(echo \${TARGET_IMAGE_NAME}):${TARGET_IMAGE_TAG}"
+    - export TARGET_IMAGE=$(echo \${TARGET_IMAGE_NAME}):${TARGET_IMAGE_TAG}
