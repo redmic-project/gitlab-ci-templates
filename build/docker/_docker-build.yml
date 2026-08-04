@@ -85,4 +85,4 @@ include:
     TARGET_REGISTRY_PASS: ${DOCKER_HUB_PASS}
   before_script:
     - flatten
-    - export TARGET_IMAGE="\${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}"
+    - export TARGET_IMAGE="$(echo ${TARGET_IMAGE_NAME}):${TARGET_IMAGE_TAG}"
