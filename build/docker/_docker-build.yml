@@ -1,8 +1,7 @@
 include:
   - local: '/build/docker/_docker.yml'
 
-.docker-build:
-  extends: .dind-env
+.docker-build-base:
   image: ${DOCKER_BUILD_IMAGE_NAME}:${DOCKER_BUILD_IMAGE_TAG}
   variables:
     DOCKER_BUILD_IMAGE_NAME: pedroetb/docker-build
@@ -11,7 +10,13 @@ include:
     REGISTRY_URL: ${CI_REGISTRY}
     REGISTRY_USER: gitlab-ci-token
     REGISTRY_PASS: ${CI_JOB_TOKEN}
-    COMPOSE_FILE_NAME_ENV: compose.tmpl.yaml:compose.pre.yaml
+
+.docker-build:
+  extends:
+    - .dind-env
+    - .docker-build-base
+  variables:
+    COMPOSE_FILE_NAME_ENV: compose.tmpl.yaml:compose.dev.yaml
     COMPOSE_FILE_NAME_SINGLE: compose.yaml
   before_script:
     - echo "Find Compose files with known names at known paths automatically .."
@@ -52,3 +57,32 @@ include:
         echo "COMPOSE_FILE_NAME is defined, omitting automatic lookup";
       fi;
   script: build
+
+.docker-tag:
+  extends:
+    - .dind-env
+    - .docker-build-base
+  dependencies: []
+  variables:
+    SOURCE_IMAGE: ${PACKAGED_IMAGE_NAME}:${PACKAGED_IMAGE_TAG}
+    TARGET_IMAGE_TAG: ${CI_COMMIT_TAG}
+  script: tag
+
+.docker-tag-gitlab:
+  extends: .docker-tag
+  variables:
+    TARGET_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
+  before_script:
+    - export TARGET_IMAGE="${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}"
+
+.docker-tag-dockerhub:
+  extends: .docker-tag
+  variables:
+    SOURCE_IMAGE_NAME: ${CI_PROJECT_PATH}
+    ROOT_NAME: ${DOCKER_HUB_ROOT}
+    TARGET_REGISTRY_URL: docker.io
+    TARGET_REGISTRY_USER: ${DOCKER_HUB_USER}
+    TARGET_REGISTRY_PASS: ${DOCKER_HUB_PASS}
+  before_script:
+    - flatten
+    - export TARGET_IMAGE="${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}"

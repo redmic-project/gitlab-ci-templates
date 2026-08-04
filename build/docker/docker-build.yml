@@ -19,3 +19,13 @@ include:
   variables:
     PACKAGED_IMAGE_TAG: ${CI_COMMIT_TAG}
     VERSION: ${CI_COMMIT_TAG}
+
+🏷️ docker-tag-dockerhub:
+  extends:
+    - .docker-tag-dockerhub
+    - .docker-tag
+  variables:
+    PACKAGED_IMAGE_TAG: ${CI_COMMIT_TAG}
+  needs:
+    - job: 🎁 docker-build-tag
+      artifacts: false
