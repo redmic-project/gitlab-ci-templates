@@ -58,7 +58,7 @@ include:
       fi;
   script: build
 
-.docker-tag:
+.docker-build-tag:
   extends:
     - .dind-env
     - .docker-build-base
@@ -69,14 +69,14 @@ include:
   script: tag
 
 .docker-tag-gitlab:
-  extends: .docker-tag
+  extends: .docker-build-tag
   variables:
     TARGET_IMAGE_NAME: ${CI_REGISTRY_IMAGE}
   before_script:
     - export TARGET_IMAGE="${TARGET_IMAGE_NAME}:${TARGET_IMAGE_TAG}"
 
 .docker-tag-dockerhub:
-  extends: .docker-tag
+  extends: .docker-build-tag
   variables:
     SOURCE_IMAGE_NAME: ${CI_PROJECT_PATH}
     ROOT_NAME: ${DOCKER_HUB_ROOT}
