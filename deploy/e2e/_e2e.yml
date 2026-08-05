@@ -7,7 +7,7 @@
 
 # Common configuration in relation to the repository events that trigger E2E jobs.
 
-.e2e-branch:
+.e2e-branch-rules:
   rules:
     - if: $CI_MERGE_REQUEST_ID ||
           $CI_COMMIT_TAG ||
@@ -16,12 +16,12 @@
     - if: $CI_COMMIT_BRANCH
       when: manual
 
-.e2e-tag:
+.e2e-tag-rules:
   rules:
     - if: $CI_COMMIT_TAG
       when: manual
 
-.e2e-schedule:
+.e2e-schedule-rules:
   rules:
     - if: $E2E_SCHEDULE_DISABLED
       when: never

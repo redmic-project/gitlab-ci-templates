@@ -14,8 +14,8 @@ include:
     DOCKERFILE_NAME: Dockerfile
     COMPOSE_FILE_SINGLE: compose.yaml
   before_script:
-    - echo "Find Compose files with known names automatically .."
     - >
+      echo "Find Compose files with known names automatically ..";
       if [ -z "${COMPOSE_FILE}" ];
       then
         firstComposeFileName=$(echo "${COMPOSE_FILE_ENV}" | cut -d ':' -f 1);
@@ -51,8 +51,8 @@ include:
       else
         echo "COMPOSE_FILE is defined, omitting automatic lookup";
       fi;
-    - echo "Find Dockerfile in depth by file name to automatically enable custom image usage .."
     - >
+      echo "Find Dockerfile in depth by file name to automatically enable custom image usage ..";
       dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
       if [ -f "${dockerfilePath}" ];
       then

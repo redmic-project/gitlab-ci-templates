@@ -4,14 +4,14 @@ include:
 🎭 e2e-playwright-branch:
   extends:
     - .e2e-playwright
-    - .e2e-branch
+    - .e2e-branch-rules
 
 🎭 e2e-playwright-tag:
   extends:
     - .e2e-playwright
-    - .e2e-tag
+    - .e2e-tag-rules
 
 🎭 e2e-playwright-schedule:
   extends:
     - .e2e-playwright
-    - .e2e-schedule
+    - .e2e-schedule-rules
