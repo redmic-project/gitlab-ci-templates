@@ -7,27 +7,26 @@ include:
   dependencies: []
   variables:
     DOCKER_IMAGE_NAME: docker
-    DOCKER_IMAGE_TAG: latest
+    DOCKER_IMAGE_TAG: cli
     LINT_IMAGE_NAME: hadolint/hadolint
     LINT_IMAGE_TAG: latest
     DOCKERFILE_NAME: Dockerfile
-  before_script:
-    - echo "Find Dockerfile in depth automatically by file name .."
-    - >
-      if [ -z "${DOCKERFILE_PATH}" ];
+  before_script: >
+    echo "Find Dockerfile in depth automatically by file name ..";
+    if [ -z "${DOCKERFILE_PATH}" ];
+    then
+      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
+      if [ -f "${dockerfilePath}" ];
       then
-        dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
-        if [ -f "${dockerfilePath}" ];
-        then
-          echo "Detected '${dockerfilePath}' Dockerfile, nice!";
-          export DOCKERFILE_PATH="${dockerfilePath}";
-        else
-          echo "DOCKERFILE_PATH is undefined and Dockerfile with name '${DOCKERFILE_NAME}' not found in project!";
-          exit 1;
-        fi;
+        echo "Detected '${dockerfilePath}' Dockerfile, nice!";
+        export DOCKERFILE_PATH="${dockerfilePath}";
       else
-        echo "DOCKERFILE_PATH is defined, omitting automatic lookup";
+        echo "DOCKERFILE_PATH is undefined and Dockerfile with name '${DOCKERFILE_NAME}' not found in project!";
+        exit 1;
       fi;
+    else
+      echo "DOCKERFILE_PATH is defined, omitting automatic lookup";
+    fi;
   script:
-    - docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < "${DOCKERFILE_PATH}";
+    docker run --rm -i ${LINT_IMAGE_NAME}:${LINT_IMAGE_TAG} < "${DOCKERFILE_PATH}"
   allow_failure: true
