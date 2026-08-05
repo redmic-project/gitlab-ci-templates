@@ -4,14 +4,14 @@ include:
 🛡 dast-zap-branch:
   extends:
     - .dast-zap
-    - .dast-branch
+    - .dast-branch-rules
 
 🛡 dast-zap-tag:
   extends:
     - .dast-zap
-    - .dast-tag
+    - .dast-tag-rules
 
 🛡 dast-zap-schedule:
   extends:
     - .dast-zap
-    - .dast-schedule
+    - .dast-schedule-rules
