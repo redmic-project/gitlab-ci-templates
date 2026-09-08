@@ -80,6 +80,13 @@ include:
       else
         echo "Unable to find any Dockerfile with name '${DOCKERFILE_NAME}', assuming external Docker image usage!";
       fi;
+    - >
+      if [ -d "${CI_PROJECT_DIR}.tmp" ];
+      then
+        deployTarget=${DEPLOY_DIR_NAME:-./deploy}/
+        echo "Detected 'file' type variables, copying them into '${deployTarget}'";
+        cp -r "${CI_PROJECT_DIR}.tmp/." "${deployTarget}";
+      fi;
   script: deploy
 
 .deploy-development:
