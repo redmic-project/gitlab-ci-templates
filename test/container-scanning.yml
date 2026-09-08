@@ -16,7 +16,7 @@ container_scanning:
     then
       echo "CS_DOCKERFILE_PATH is defined and file exists, omitting automatic lookup";
     else
-      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
+      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" -print -quit);
       if [ -f "${dockerfilePath}" ];
       then
         echo "Detected '${dockerfilePath}' Dockerfile, nice!";
@@ -31,4 +31,3 @@ container_scanning:
     else
       export CI_APPLICATION_TAG="${CI_COMMIT_TAG}";
     fi;
-  when: manual

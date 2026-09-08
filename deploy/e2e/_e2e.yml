@@ -2,6 +2,7 @@
   stage: deploy
   dependencies: []
   needs: []
+  when: manual
   variables:
     E2E_MAIN_DIR: e2e
 
@@ -14,15 +15,14 @@
           $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_COMMIT_BRANCH
-      when: manual
 
 .e2e-tag-rules:
   rules:
     - if: $CI_COMMIT_TAG
-      when: manual
 
 .e2e-schedule-rules:
   rules:
     - if: $E2E_SCHEDULE_DISABLED
       when: never
     - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: on_success
