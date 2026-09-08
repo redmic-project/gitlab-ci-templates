@@ -19,8 +19,12 @@ include:
       if [ -z "${COMPOSE_FILE}" ];
       then
         firstComposeFileName=$(echo "${COMPOSE_FILE_ENV}" | cut -d ':' -f 1);
-        for directory in ${DEPLOY_DIR_NAME:-deploy .};
+        for directory in ${DEPLOY_DIR_NAME:-deploy docker .};
         do
+          if [ ! -d "${directory}" ];
+          then
+            continue;
+          fi;
           firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" -print -quit);
           singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_SINGLE}" -print -quit);
           if [ -f "${firstComposeFilePath}" ];

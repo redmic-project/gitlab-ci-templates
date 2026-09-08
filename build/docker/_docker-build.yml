@@ -23,8 +23,12 @@ include:
     if [ -z "${COMPOSE_FILE_NAME}" ];
     then
       firstComposeFileName=$(echo "${COMPOSE_FILE_NAME_ENV}" | cut -d ':' -f 1);
-      for directory in ${COMPOSE_PROJECT_DIRECTORY:-build .};
+      for directory in ${COMPOSE_PROJECT_DIRECTORY:-build docker .};
       do
+        if [ ! -d "${directory}" ];
+        then
+          continue;
+        fi;
         firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" -print -quit);
         singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_NAME_SINGLE}" -print -quit);
         if [ -f "${firstComposeFilePath}" ];
