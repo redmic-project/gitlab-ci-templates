@@ -18,47 +18,67 @@ include:
   variables:
     COMPOSE_FILE_NAME_ENV: compose.tmpl.yaml:compose.dev.yaml
     COMPOSE_FILE_NAME_SINGLE: compose.yaml
-  before_script: >
-    echo "Find Compose files with known names at known paths automatically ..";
-    if [ -z "${COMPOSE_FILE_NAME}" ];
-    then
-      firstComposeFileName=$(echo "${COMPOSE_FILE_NAME_ENV}" | cut -d ':' -f 1);
-      for directory in ${COMPOSE_PROJECT_DIRECTORY:-build docker .};
-      do
-        if [ ! -d "${directory}" ];
+  before_script:
+    - >
+      if [ ${OMIT_EXISTING_IMAGE_CHECK} = "true" ];
+      then
+        echo "Existing image check is omitted, proceeding to build ..";
+      else
+        echo "Looking for existing '${PACKAGED_IMAGE_NAME}:${PACKAGED_IMAGE_TAG}' image at registry ..";
+        echo "${REGISTRY_PASS}" | docker login -u "${REGISTRY_USER}" --password-stdin "${REGISTRY_URL}";
+        imageCheckExitCode=0;
+        docker manifest inspect "${PACKAGED_IMAGE_NAME}:${PACKAGED_IMAGE_TAG}" > /dev/null 2>&1 || imageCheckExitCode=${?};
+        docker logout "${REGISTRY_URL}";
+        if [ ${imageCheckExitCode} -eq 0 ];
         then
-          continue;
-        fi;
-        firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" -print -quit);
-        singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_NAME_SINGLE}" -print -quit);
-        if [ -f "${firstComposeFilePath}" ];
-        then
-          echo "Detected '${firstComposeFilePath}' compose file, nice!";
-          composeFileName="${COMPOSE_FILE_NAME_ENV}";
-          composeProjectDirectory=$(dirname "${firstComposeFilePath}");
-        elif [ -f "${singleComposeFilePath}" ];
-        then
-          echo "Detected '${singleComposeFilePath}' compose file, nice!";
-          composeFileName="${COMPOSE_FILE_NAME_SINGLE}";
-          composeProjectDirectory=$(dirname "${singleComposeFilePath}");
+          echo "Image found at registry, omitting build!";
+          echo "Tip: You can set 'OMIT_EXISTING_IMAGE_CHECK=true' to allow image rebuilding!";
+          exit 0;
         else
-          echo "No compose file detected at '${directory}/'";
+          echo "Image not found at registry, proceeding to build ..";
         fi;
-        if [ ! -z "${composeFileName}" ];
-        then
-          echo "Automatically set COMPOSE_FILE_NAME to '${composeFileName}' and COMPOSE_PROJECT_DIRECTORY to '${composeProjectDirectory}'";
-          export COMPOSE_FILE_NAME="${composeFileName}";
-          export COMPOSE_PROJECT_DIRECTORY="${composeProjectDirectory}";
-          break;
-        fi;
-      done;
+      fi;
+    - >
+      echo "Find Compose files with known names at known paths automatically ..";
       if [ -z "${COMPOSE_FILE_NAME}" ];
       then
-        echo "No compose file specified or detected, using docker-build default for COMPOSE_FILE_NAME and COMPOSE_PROJECT_DIRECTORY";
+        firstComposeFileName=$(echo "${COMPOSE_FILE_NAME_ENV}" | cut -d ':' -f 1);
+        for directory in ${COMPOSE_PROJECT_DIRECTORY:-build docker .};
+        do
+          if [ ! -d "${directory}" ];
+          then
+            continue;
+          fi;
+          firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" -print -quit);
+          singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_NAME_SINGLE}" -print -quit);
+          if [ -f "${firstComposeFilePath}" ];
+          then
+            echo "Detected '${firstComposeFilePath}' compose file, nice!";
+            composeFileName="${COMPOSE_FILE_NAME_ENV}";
+            composeProjectDirectory=$(dirname "${firstComposeFilePath}");
+          elif [ -f "${singleComposeFilePath}" ];
+          then
+            echo "Detected '${singleComposeFilePath}' compose file, nice!";
+            composeFileName="${COMPOSE_FILE_NAME_SINGLE}";
+            composeProjectDirectory=$(dirname "${singleComposeFilePath}");
+          else
+            echo "No compose file detected at '${directory}/'";
+          fi;
+          if [ ! -z "${composeFileName}" ];
+          then
+            echo "Automatically set COMPOSE_FILE_NAME to '${composeFileName}' and COMPOSE_PROJECT_DIRECTORY to '${composeProjectDirectory}'";
+            export COMPOSE_FILE_NAME="${composeFileName}";
+            export COMPOSE_PROJECT_DIRECTORY="${composeProjectDirectory}";
+            break;
+          fi;
+        done;
+        if [ -z "${COMPOSE_FILE_NAME}" ];
+        then
+          echo "No compose file specified or detected, using docker-build default for COMPOSE_FILE_NAME and COMPOSE_PROJECT_DIRECTORY";
+        fi;
+      else
+        echo "COMPOSE_FILE_NAME is defined, omitting automatic lookup";
       fi;
-    else
-      echo "COMPOSE_FILE_NAME is defined, omitting automatic lookup";
-    fi;
   script: build
 
 .docker-build-tag:
