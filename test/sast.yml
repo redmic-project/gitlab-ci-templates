@@ -4,6 +4,3 @@
 include:
   # Source: https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST.gitlab-ci.yml
   - template: Jobs/SAST.gitlab-ci.yml
-
-sast:
-  when: manual
