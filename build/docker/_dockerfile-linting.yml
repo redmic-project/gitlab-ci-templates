@@ -15,7 +15,7 @@ include:
     echo "Find Dockerfile in depth automatically by file name ..";
     if [ -z "${DOCKERFILE_PATH}" ];
     then
-      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
+      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" -print -quit);
       if [ -f "${dockerfilePath}" ];
       then
         echo "Detected '${dockerfilePath}' Dockerfile, nice!";

@@ -21,8 +21,8 @@ include:
         firstComposeFileName=$(echo "${COMPOSE_FILE_ENV}" | cut -d ':' -f 1);
         for directory in ${DEPLOY_DIR_NAME:-deploy .};
         do
-          firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" | head -1);
-          singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_SINGLE}" | head -1);
+          firstComposeFilePath=$(find "./${directory}" -type f -name "${firstComposeFileName}" -print -quit);
+          singleComposeFilePath=$(find "./${directory}" -type f -name "${COMPOSE_FILE_SINGLE}" -print -quit);
           if [ -f "${firstComposeFilePath}" ];
           then
             echo "Detected '${firstComposeFilePath}' compose file, nice!";
@@ -53,7 +53,7 @@ include:
       fi;
     - >
       echo "Find Dockerfile in depth by file name to automatically enable custom image usage ..";
-      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" | head -1);
+      dockerfilePath=$(find -type f -name "${DOCKERFILE_NAME}" -print -quit);
       if [ -f "${dockerfilePath}" ];
       then
         echo "Detected '${dockerfilePath}' Dockerfile, setting up custom image variables (IMAGE_NAME and IMAGE_TAG) ..";
