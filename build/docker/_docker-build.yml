@@ -20,7 +20,7 @@ include:
     COMPOSE_FILE_NAME_SINGLE: compose.yaml
   before_script:
     - >
-      if [ ${OMIT_EXISTING_IMAGE_CHECK} = "true" ];
+      if [ ${OMIT_EXISTING_IMAGE_CHECK} -eq 1 ];
       then
         echo "Existing image check is omitted, proceeding to build ..";
       else
@@ -32,7 +32,7 @@ include:
         if [ ${imageCheckExitCode} -eq 0 ];
         then
           echo "Image found at registry, omitting build!";
-          echo "Tip: You can set 'OMIT_EXISTING_IMAGE_CHECK=true' to allow image rebuilding!";
+          echo "Tip: You can set 'OMIT_EXISTING_IMAGE_CHECK=1' to allow image rebuilding!";
           exit 0;
         else
           echo "Image not found at registry, proceeding to build ..";
